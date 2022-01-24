@@ -82,8 +82,8 @@
 		}
 	}
 	
-	$: document.onclick = function(e){
-		if(e.target !== el){
+	function onClick(ev) {
+		if(ev.target !== el){
 			expanded = false;
 			active = 0;
 		}
@@ -215,6 +215,8 @@
 		color: grey;
 	}
 </style>
+
+<svelte:window on:click={onClick}/>
 
 <div id="select" class:active={expanded} on:keydown={doKeydown}>
 	{#if selectedItem && !search}

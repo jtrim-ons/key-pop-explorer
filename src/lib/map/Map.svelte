@@ -1,6 +1,6 @@
 <script>
 	import { onMount, setContext } from "svelte";
-	import { Map, NavigationControl, GeolocateControl } from "mapbox-gl";
+	import mapbox from "mapbox-gl";
 
 	export let map;
 	export let id = "map";
@@ -44,7 +44,7 @@
 		link.href = "https://unpkg.com/mapbox-gl@1.13.0/dist/mapbox-gl.css";
 
 		link.onload = () => {
-			map = new Map({
+			map = new mapbox.Map({
 				container,
 				style: style,
 				minZoom: minzoom,
@@ -54,13 +54,13 @@
 			});
 
 			if (zoomcontrol) {
-				map.addControl(new NavigationControl({showCompass: false}));
+				map.addControl(new mapbox.NavigationControl({showCompass: false}));
 			}
 			if (!scrollzoom) {
 				map.scrollZoom.disable();
 			}
 			if (geolocate) {
-				map.addControl(new GeolocateControl());
+				map.addControl(new mapbox.GeolocateControl());
 			}
 
 			// Get initial zoom level

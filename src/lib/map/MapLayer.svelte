@@ -1,11 +1,11 @@
 <script>
 	import { getContext } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { Popup } from "mapbox-gl";
+	import mapbox from "mapbox-gl";
 
 	const dispatch = createEventDispatcher();
 
-	const popup = new Popup({
+	const popup = new mapbox.Popup({
     closeButton: false,
     closeOnClick: false
   });
