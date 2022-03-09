@@ -7,9 +7,12 @@
 	export let location = {
 		bounds: [
 			[-5.816, 49.864],
-			[1.863, 55.872],
+			[1.863, 55.872]
 		], // England & Wales
 	};
+	export let maxbounds = [
+		[ -13, 48 ], [ 5, 60 ]
+	];
 	export let style = "https://bothness.github.io/ons-basemaps/data/style-omt.json";
 	export let interactive = true;
 	export let minzoom = 0;
@@ -33,10 +36,9 @@
 		options = {
 			center: [location.lon, location.lat],
 		};
-		if (location.zoom) {
-			options.zoom = location.zoom;
-		}
+		if (location.zoom) options.zoom = location.zoom;
 	}
+	if (maxbounds) options.maxBounds = maxbounds;
 
 	onMount(() => {
 		const link = document.createElement("link");
@@ -107,6 +109,6 @@
 	}
 	div {
 		width: 100%;
-		height: calc(100% - 65px);
+		height: 100%;
 	}
 </style>

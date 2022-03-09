@@ -1,7 +1,7 @@
 <script>
   import { assets } from "$app/paths";
 	import { setContext } from "svelte";
-  import "../app.css";
+  // import "../app.css";
 	import { themes } from "$lib/config";
 	import Warning from "$lib/ui/Warning.svelte";
 	import ONSHeader from "$lib/layout/ONSHeader.svelte";
@@ -18,6 +18,7 @@
 </svelte:head>
 
 <Warning/>
+
 <ONSHeader/>
 
 <main>
@@ -25,3 +26,7 @@
 </main>
 
 <ONSFooter/>
+
+<style>
+  @import url("https://cdn.ons.gov.uk/sixteens/77f1d9b/css/main.css");
+</style>

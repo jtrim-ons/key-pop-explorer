@@ -265,14 +265,25 @@ export const vars = [
 
 export const codes = {
 	age: [
-		{label: '0-9', cells: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]},
-		{label: '10-19', cells: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]},
-		{label: '20-29', cells: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]},
-		{label: '30-39', cells: [30, 31, 32, 33, 34, 35, 36, 37, 38, 39]},
-		{label: '40-49', cells: [40, 41, 42, 43, 44, 45, 46, 47, 48, 49]},
-		{label: '50-59', cells: [50, 51, 52, 53, 54, 55, 56, 57, 58, 59]},
-		{label: '60-69', cells: [60, 61, 62, 63, 64, 65, 66, 67, 68, 69]},
-		{label: '70+', cells: [70, 71, 72, 73, 74]}
+		{label: '0-4', cells: [0, 1, 2, 3, 4]},
+		{label: '5-9', cells: [5, 6, 7, 8, 9]},
+		{label: '10-14', cells: [10, 11, 12, 13, 14]},
+		{label: '15-19', cells: [15, 16, 17, 18, 19]},
+		{label: '20-24', cells: [20, 21, 22, 23, 24]},
+		{label: '25-29', cells: [25, 26, 27, 28, 29]},
+		{label: '30-34', cells: [30, 31, 32, 33, 34]},
+		{label: '35-39', cells: [35, 36, 37, 38, 39]},
+		{label: '40-44', cells: [40, 41, 42, 43, 44]},
+		{label: '45-49', cells: [45, 46, 47, 48, 49]},
+		{label: '50-54', cells: [50, 51, 52, 53, 54]},
+		{label: '55-59', cells: [55, 56, 57, 58, 59]},
+		{label: '60-64', cells: [60, 61, 62, 63, 64]},
+		{label: '65-69', cells: [65, 66, 67, 68, 69]},
+		{label: '70-74', cells: [70]},
+		{label: '75-79', cells: [71]},
+		{label: '80-84', cells: [72]},
+		{label: '85-89', cells: [73]},
+		{label: '90+', cells: [74]}
 	],
 	distance: [
 		{label: '0-2', cells: [0]},
@@ -284,11 +295,11 @@ export const codes = {
 		{label: '60+', cells: [6]}
 	],
 	economic: [
-		{label: 'employee', cells: [0]},
-		{label: 'self-employed', cells: [1]},
-		{label: 'student (employed)', cells: [2]},
-		{label: 'unemployed', cells: [3]},
-		{label: 'inactive', cells: [4]}
+		{label: 'Employee', cells: [0]},
+		{label: 'Self-employed', cells: [1]},
+		{label: 'Student (employed)', cells: [2]},
+		{label: 'Unemployed', cells: [3]},
+		{label: 'Inactive', cells: [4]}
 	],
 	grade: [
 		{label: 'AB', cells: [0]},
@@ -297,33 +308,33 @@ export const codes = {
 		{label: 'DE', cells: [3]}
 	],
 	health: [
-		{label: 'good', cells: [0, 1]},
-		{label: 'fair', cells: [2]},
-		{label: 'bad', cells: [3, 4]},
+		{label: 'Good', cells: [0, 1]},
+		{label: 'Fair', cells: [2]},
+		{label: 'Bad', cells: [3, 4]},
 	],
 	travel: [
-		{label: 'train/metro', cells: [1, 2]},
-		{label: 'bus', cells: [3]},
-		{label: 'taxi', cells: [4]},
-		{label: 'car/van', cells: [6, 7]},
-		{label: 'motorbike/scooter', cells: [5]},
-		{label: 'bicycle', cells: [8]},
-		{label: "on foot", cells: [9]},
-		{label: 'work from home', cells: [0]},
-		{label: "other", cells: [10]}
+		{label: 'Train/metro', cells: [1, 2]},
+		{label: 'Bus', cells: [3]},
+		{label: 'Taxi', cells: [4]},
+		{label: 'Car/van', cells: [6, 7]},
+		{label: 'Motorbike/scooter', cells: [5]},
+		{label: 'Bicycle', cells: [8]},
+		{label: "On foot", cells: [9]},
+		{label: 'Work from home', cells: [0]},
+		{label: "Other", cells: [10]}
 	],
 	housing: [
-		{label: 'house/bungalow', cells: [0, 1, 2]},
-		{label: 'flat/maisonette/apartment', cells: [3, 4, 5]},
-		{label: 'caravan/mobile/temporary home', cells: [6]}
+		{label: 'House/bungalow', cells: [0, 1, 2]},
+		{label: 'Flat/maisonette/apartment', cells: [3, 4, 5]},
+		{label: 'Caravan/mobile/temporary home', cells: [6]}
 	],
 	tenure: [
-		{label: 'owner occupied', cells: [0, 1]},
-		{label: 'shared ownership', cells: [2]},
-		{label: 'rented (private)', cells: [5, 6, 7]},
-		{label: 'rented (social)', cells: [3, 4]},
-		{label: 'rent free', cells: [9]},
-		{label: 'other', cells: [8]}
+		{label: 'Owner occupied', cells: [0, 1]},
+		{label: 'Shared ownership', cells: [2]},
+		{label: 'Rented (private)', cells: [5, 6, 7]},
+		{label: 'Rented (social)', cells: [3, 4]},
+		{label: 'Rent free', cells: [9]},
+		{label: 'Other', cells: [8]}
 	],
 	marital: [
 		{label: 'Single (never married)', cells: [0]},

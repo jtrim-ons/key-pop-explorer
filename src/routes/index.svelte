@@ -43,13 +43,18 @@
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
 	import { themes, vars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
-  import Section from "$lib/layout/Section.svelte";
-	import ColChart from "$lib/chart/ColChart.svelte";
-	import StackedBarChart from "$lib/chart/StackedBarChart.svelte";
+	import Titleblock from "$lib/layout/Titleblock.svelte";
+	import Headline from "$lib/layout/partial/Headline.svelte";
+	import BarChart from "$lib/chart/BarChart.svelte";
+	import ProfileChart from "$lib/chart/ProfileChart.svelte";
+	import BreaksChart from "$lib/chart/BreaksChart.svelte";
+	import Table from "$lib/chart/Table.svelte";
 	import Map from "$lib/map/Map.svelte";
 	import MapSource from "$lib/map/MapSource.svelte";
 	import MapLayer from "$lib/map/MapLayer.svelte";
-	import SpineChart from "$lib/chart/SpineChart.svelte";
+	import Content from "$lib/layout/Content.svelte";
+	import Cards from "$lib/layout/Cards.svelte";
+	import Card from "$lib/layout/partial/Card.svelte";
 
   export let geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc;
 
@@ -94,13 +99,13 @@
 	
 	function doSelect(topic) {
 		selected = [...selected, {topic: active.label, key: active.key, ...active_cats[topic]}];
-    goto(`?${selected.map(d => `${d.key}=${d.code}`).join('&')}`);
+    goto(`${base}?${selected.map(d => `${d.key}=${d.code}`).join('&')}`, {noscroll: true});
 		active = null;
 	}
 	
 	function unSelect(topic) {
 		selected = selected.filter(d => d.topic != topic);
-		goto(`?${selected.map(d => `${d.key}=${d.code}`).join('&')}`);
+		goto(`${base}?${selected.map(d => `${d.key}=${d.code}`).join('&')}`, {noscroll: true});
 	}
 
 	function loadData() {
@@ -172,8 +177,8 @@
 			}
 		});
 	}
-	
-	function makeData(props) {
+
+	function makeDataNew(props) {
 		let group = props[0];
 		let dataset = props[1];
 		let valsAll = data.all[group][dataset].values;
@@ -194,12 +199,16 @@
 				valSelected += valsSelected[i];
 				sumSelected += valsSelected[i];
 			});
-			arr.push({x: label, yVal: valSelected, zVal: valAll});
+			if (sum.selected != sum.all) arr.push({group: "This group", category: label, count: valSelected});
+			arr.push({group: "Whole population", category: label, count: valAll});
 		});
 
-		arr.forEach(d => {
-			d.y = (d.yVal / sumSelected) * 100;
-			d.z = (d.zVal / sumAll) * 100;
+		arr.forEach((d, i) => {
+			if (sum.selected != sum.all && i % 2 == 0) {
+				d.value = (d.count / sumSelected) * 100;
+			} else {
+				d.value = (d.count / sumAll) * 100;
+			}
 		});
 
 		return arr;
@@ -223,7 +232,6 @@
 	}
 
   afterNavigate(() => {
-    console.log('navigated');
     selected = []
     for (let pair of $page.url.searchParams.entries()) {
       let variable = vars.find(d => d.key == pair[0]);
@@ -234,12 +242,7 @@
         }
       }
     }
-    if (selected[0]) {
-      loadData();
-    } else {
-      data.selected = dataAll;
-      sum.selected = sumAll;
-    }
+    loadData();
   });
 
 	$: w && onResize();
@@ -256,46 +259,47 @@
 	<meta name="description" content="" />
 </svelte:head>
 
-<Section column="wide">
-
-  <h1 class="mtl">Key population explorer</h1>
-  
-  <p>Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion=7&cob=1-5">people of Sikh ethnicity born in the UK</a> or <a href="?age=65-90&cob=6">people aged 65+ born in Ireland</a>.</p>
-  
-  <select bind:value={active} disabled={!ops[0]}>
-    <option value={null}>{!ops[0] ? 'No more topics available' : selected[0] ? 'Select another topic' : 'Select a topic'}</option>
+<main id="main" tabindex="-1">
+<Titleblock
+	background="none"
+	breadcrumb="{[{label: 'Census', url: '/census'}, {label: 'Key population explorer'}]}">
+	<Headline>Key population explorer</Headline>
+	<p class="subtitle">Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion=7&cob=1-5">people of Sikh ethnicity born in the UK</a> or <a href="?age=65-90&cob=6">people aged 65+ born in Ireland</a>.</p>
+	<div slot="meta" class="wrapper">
+	<select bind:value={active} disabled={!ops[0]}>
+    <option value={null}>{!ops[0] ? 'No more topics available' : selected[0] ? 'Select another characteristic' : 'Select a characteristic'}</option>
     {#each ops as op, i}
     <option value={op}>{capitalise(op.label)}</option>
     {/each}
   </select>
-  
-  {#if active}
-  <select bind:value={active_cats[active.label]}>
-    {#each active.cats as cat}
-    <option value={cat}>{@html cat.indent ? Array.from({length: cat.indent - 1}, v => spacer).join('') + arrow : ''}{capitalise(cat.label)}</option>
-    {/each}
-  </select>
-  <button class="btn" on:mouseup={() => doSelect(active.label)}>
-    Add
-  </button>
-  {/if}
-  
-  {#if selected[0]}
-  <br/>
-  {#each selected as item, i}
-  {#if status == 'loading' && i == selected.length - 1}
-  <div class="chip chip-pending">
-    <span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
-    <div class="loader"/>
-  </div>
-  {:else}
-  <div class="chip" class:chip-inactive={i >= varcount}>
-    <span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
-    <button class="btn-pill" on:click="{() => unSelect(item.topic)}"/>
-  </div>
-  {/if}
-  {/each}
-  {/if}
+
+	{#if active}
+	<select bind:value={active_cats[active.label]}>
+		{#each active.cats as cat}
+		<option value={cat}>{@html cat.indent ? Array.from({length: cat.indent - 1}, v => spacer).join('') + arrow : ''}{capitalise(cat.label)}</option>
+		{/each}
+	</select>
+	<button class="btn" on:mouseup={() => doSelect(active.label)}>
+		Add
+	</button>
+	{/if}
+	
+	{#if selected[0]}
+	<br/>
+	{#each selected as item, i}
+	{#if status == 'loading' && i == selected.length - 1}
+	<div class="chip chip-pending">
+		<span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
+		<div class="chip-loader"/>
+	</div>
+	{:else}
+	<div class="chip" class:chip-inactive={i >= varcount}>
+		<span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
+		<button on:click="{() => unSelect(item.topic)}"/>
+	</div>
+	{/if}
+	{/each}
+	{/if}
   
   {#if status == "failed" || u16 == true}
   <div class="warning">
@@ -308,222 +312,186 @@
     {/if}
   </div>
   {/if}
-  
-  {#if data.all && data.selected && sum.all && sum.selected >= 0}
-  <div id="grid" class="grid mt" bind:clientWidth={w}>
-    <div style="grid-column: span {cols};">
-      <h3>Demographics</h3>
-    </div>
-    <div>
-      <span class="text-label">Population</span><br/>
-      {#if sum.selected == 0}
-      <span class="muted">{texts.nodata}</span>
+	</div>
+</Titleblock>
+
+<Content>
+	<Cards title="Demographics">
+		<Card title="Population">
+			{#if sum.selected == 0}
+			<div class="num-desc">{texts.nodata}</div>
+			{:else}
+			<div class="num-big">{Math.round((sum.selected / sum.all) * 100) > 0 ? Math.round((sum.selected / sum.all) * 100) : '<1'}%</div>
+			<div class="num-suffix">of people in England and Wales</div>
+			<div class="num-desc"><mark>{sum.selected.toLocaleString()}</mark> of {sum.all.toLocaleString()} people</div>
+			{/if}
+		</Card>
+		<Card title="Average (median) age">
+			{#if isNA(data.selected.residents.age.values)}
+			<div class="num-desc">{texts.nodata}</div>
+			{:else}
+			<div class="num-big">{getMedianAge(data.selected)}</div>
+			<div class="num-suffix">years</div>
+			{#if sum.all != sum.selected}
+      <div class="num-desc"><mark>{getMedianAge(data.all)} years</mark> for whole population</div>
+      {/if}
+			{/if}
+		</Card>
+		<Card title="Age profile">
+			{#if isNA(data.selected.residents.age.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <span class="inline text-big">{Math.round((sum.selected / sum.all) * 100) > 0 ? Math.round((sum.selected / sum.all) * 100) : '<1'}%</span>
-      <span class="inline condensed text-small">of people in<br/>England and Wales</span>
-      <div class="text-small muted">{sum.selected.toLocaleString()} of {sum.all.toLocaleString()} people</div>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Median Age</span><br/>
-      {#if isNA(data.selected.residents.age.values)}
-      <span class="muted">{texts.nodata}</span>
+			<ProfileChart data="{data.selected && makeDataNew(['residents', 'age'])}"/>
+			{/if}
+		</Card>
+	</Cards>
+
+	<Cards title="Population by area">
+		<Card colspan={2} rowspan={2} blank>
+			<div style:height="450px">
+			<Map bind:map style={mapStyle}>
+				{#if data.geojson && data.geoPerc}
+				<MapSource
+					id="lad"
+					type="geojson"
+					data={data.geojson}
+					promoteId={ladBounds.code}
+				>
+					<MapLayer
+						id="lad-fill"
+						data={data.geoPerc}
+						geoCode="code"
+						nameCode="name"
+						colorCode="color"
+						valueCode="value"
+						hover={true}
+						bind:hovered={hovered}
+						tooltip={true}
+						type="fill"
+						paint={{
+							"fill-color": [
+								"case",
+								["!=", ["feature-state", "color"], null],
+								["feature-state", "color"],
+								"rgba(255, 255, 255, 0)",
+							],
+							"fill-opacity": 0.8
+						}}
+						order="highway_name_other"
+					/>
+					<MapLayer
+						id="lad-line"
+						type="line"
+						paint={{
+							"line-color": "orange",
+							"line-width": 2,
+							"line-opacity": [
+								"case",
+								["==", ["feature-state", "hovered"], true],
+								1,
+								0,
+							],
+						}}
+						order="highway_name_other"
+					/>
+				</MapSource>
+				{/if}
+			</Map>
+			</div>
+			{#if data.geoBreaks && data.geoPerc}
+			<div style:height="38px" style:width="100%">
+				<BreaksChart breaks={data.geoBreaks} hovered={hovered && data.geoPerc.find(d => d.code == hovered) ? data.geoPerc.find(d => d.code == hovered).value : null} colors={data.geoBreaks[1] == 100 ? [colors.seq[4]] : colors.seq}/>
+			</div>
+			{/if}
+		</Card>
+		<Card title="Areas with highest %">
+			{#if data.geoPerc && selected[0]}
+			<Table data={[...data.geoPerc].sort((a, b) => b.value - a.value).slice(0, 5)}/>
+			{:else}
+			<span class="muted">Make a selection to see rankings.</span>
+			{/if}
+		</Card>
+		<Card title="Areas with lowest %">
+			{#if data.geoPerc && selected[0]}
+			<Table data={data.geoPerc.filter(d => d.value != null).sort((a, b) => b.value - a.value).slice(-5)} offset={data.geoPerc.filter(d => d.value != null).length - 4}/>
+			{:else}
+			<span class="muted">Make a selection to see rankings.</span>
+			{/if}
+		</Card>
+	</Cards>
+
+	<Cards title="Key indicators">
+		<Card title="General health">
+			{#if isNA(data.selected.residents.health.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <span class="inline text-big">{getMedianAge(data.selected)}</span>
-      <span class="inline text-small">years</span>
-      {#if sum.all != sum.selected}
-      <div class="text-small muted">vs {getMedianAge(data.all)} years for whole population</div>
-      {/if}
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Age profile</span><br/>
-      {#if isNA(data.selected.residents.age.values)}
-      <span class="muted">{texts.nodata}</span>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'health'])}"/>
+			{/if}
+		</Card>
+		<Card title="Marital status">
+			{#if isNA(data.selected.residents.marital.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <div class="chart" style="height: 100px;">
-        <ColChart data="{data.selected && makeData(['residents','age'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      </div>
-      {#if sum.all != sum.selected}
-      <div class="text-small muted"><li class="line"></li> {texts.comparison}</div>
-      {/if}
-      {/if}
-    </div>
-    <div style="grid-column: span {cols};">
-      <h3>Population by area</h3>
-    </div>
-    <div id="map" style="grid-column: span {cols >= 2 ? 2 : 1};">
-      <Map bind:map style={mapStyle}>
-        {#if data.geojson && data.geoPerc}
-        <MapSource
-          id="lad"
-          type="geojson"
-          data={data.geojson}
-          promoteId={ladBounds.code}
-        >
-          <MapLayer
-            id="lad-fill"
-            data={data.geoPerc}
-            geoCode="code"
-            nameCode="name"
-            colorCode="color"
-            valueCode="value"
-            hover={true}
-            bind:hovered={hovered}
-            tooltip={true}
-            type="fill"
-            paint={{
-              "fill-color": [
-                "case",
-                ["!=", ["feature-state", "color"], null],
-                ["feature-state", "color"],
-                "rgba(255, 255, 255, 0)",
-              ],
-              "fill-opacity": 0.8
-            }}
-            order="highway_name_other"
-          />
-          <MapLayer
-            id="lad-line"
-            type="line"
-            paint={{
-              "line-color": "orange",
-              "line-width": 2,
-              "line-opacity": [
-                "case",
-                ["==", ["feature-state", "hovered"], true],
-                1,
-                0,
-              ],
-            }}
-            order="highway_name_other"
-          />
-        </MapSource>
-        {/if}
-      </Map>
-    </div>
-    <div>
-      <span class="text-label">% of population by local authority</span><br/>
-      <div class="chart" style="height: 40px;">
-        {#if data.geoBreaks && data.geoPerc}
-        <SpineChart ticks={data.geoBreaks} data={hovered && data.geoPerc.find(d => d.code == hovered) ? [{x: data.geoPerc.find(d => d.code == hovered).value}] : []} colors={data.geoBreaks[1] == 100 ? [colors.seq[4]] : colors.seq}/>
-        {/if}
-      </div>
-    </div>
-    <div>
-      <span class="text-label">Areas with highest %</span><br/>
-      {#if data.geoPerc && selected[0]}
-      <table class="table-rank text-small">
-        <tbody>
-          {#each [...data.geoPerc].sort((a, b) => b.value - a.value).slice(0, 5) as item, i}
-          <tr>
-            <td class="w30">{i + 1}.</td>
-            <td>{item.name}</td>
-            <td class="text-right">{item.value.toFixed(1)}%</td>
-          </tr>
-          {/each}
-        </tbody>
-      </table>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'marital'])}"/>
+			{/if}
+		</Card>
+		<Card title="Social grade">
+			{#if isNA(data.selected.residents.grade.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <span class="muted">Make a selection to see ranking.</span>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Areas with lowest %</span><br/>
-      {#if data.geoPerc && selected[0]}
-      <table class="table-rank text-small">
-        <tbody>
-          {#each data.geoPerc.filter(d => d.value != null).sort((a, b) => b.value - a.value).slice(-5) as item, i}
-          <tr>
-            <td class="w30">{data.geoPerc.length + i - 4}.</td>
-            <td>{item.name}</td>
-            <td class="text-right">{item.value.toFixed(1)}%</td>
-          </tr>
-          {/each}
-        </tbody>
-      </table>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'grade'])}"/>
+			{/if}
+		</Card>
+		<Card title="Economic activity">
+			{#if isNA(data.selected.residents.economic.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <span class="muted">Make a selection to see ranking.</span>
-      {/if}
-    </div>
-    <div style="grid-column: span {cols};">
-      <h3>Key indicators</h3>
-    </div>
-    <div>
-      <span class="text-label">General health</span><br/>
-      {#if isNA(data.selected.residents.health.values)}
-      <span class="muted">{texts.nodata}</span>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'economic'])}"/>
+			{/if}
+		</Card>
+		<Card title="Distance to work (km)">
+			{#if isNA(data.selected.residents.distance.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['residents', 'health'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Marital status</span><br/>
-      {#if isNA(data.selected.residents.marital.values)}
-      <span class="muted">{texts.nodata}</span>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'distance'])}"/>
+			{/if}
+		</Card>
+		<Card title="Mode of travel to work">
+			{#if isNA(data.selected.residents.travel.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['residents', 'marital'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Social grade</span><br/>
-      {#if isNA(data.selected.residents.grade.values)}
-      <span class="muted">{texts.nodata}</span>
+			<BarChart data="{data.selected && makeDataNew(['residents', 'travel'])}"/>
+			{/if}
+		</Card>
+		<Card title="Type of housing">
+			{#if isNA(data.selected.households.housing.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['residents', 'grade'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Economic activity</span><br/>
-      {#if isNA(data.selected.residents.economic.values)}
-      <span class="muted">{texts.nodata}</span>
+			<BarChart data="{data.selected && makeDataNew(['households', 'housing'])}"/>
+			{/if}
+		</Card>
+		<Card title="Tenure of housing">
+			{#if isNA(data.selected.households.tenure.values)}
+      <span class="num-desc">{texts.nodata}</span>
       {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['residents', 'economic'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Distance to work (km)</span><br/>
-      {#if isNA(data.selected.residents.distance.values)}
-      <span class="muted">{texts.nodata}</span>
-      {:else}
-      <div class="chart" style="height: 100px;">
-        <ColChart data="{data.selected && makeData(['residents','distance'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      </div>
-      {#if sum.all != sum.selected}
-      <div class="text-small muted"><li class="line"></li> vs whole population</div>
-      {/if}
-      <div class="text-small muted">Excludes home workers and other circumstances</div>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Mode of travel to work</span><br/>
-      {#if isNA(data.selected.residents.travel.values)}
-      <span class="muted">{texts.nodata}</span>
-      {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['residents', 'travel'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Type of housing</span><br/>
-      {#if isNA(data.selected.households.housing.values)}
-      <span class="muted">{texts.nodata}</span>
-      {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['households', 'housing'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-    <div>
-      <span class="text-label">Tenure of housing</span><br/>
-      {#if isNA(data.selected.households.tenure.values)}
-      <span class="muted">{texts.nodata}</span>
-      {:else}
-      <StackedBarChart label={texts.comparison} data="{data.selected && makeData(['households', 'tenure'])}" zKey="{sum.all != sum.selected ? 'z' : null}"/>
-      {/if}
-    </div>
-  </div>
-  {/if}  
-</Section>
+			<BarChart data="{data.selected && makeDataNew(['households', 'tenure'])}"/>
+			{/if}
+		</Card>
+	</Cards>
+</Content>
+</main>
 
 <style>
+	:global(.tile) {
+		color: black;
+		font-size: 1rem;
+	}
+	:global(p) {
+		font-size: 1rem;
+	}
+	:global(.mapboxgl-ctrl-icon) {
+		visibility: visible !important;
+	}
 	a {
 		color: #206095;
 		text-decoration: underline;
@@ -531,12 +499,9 @@
 	a:hover {
 		color: rgb(0, 60, 87);
 	}
-	img {
-		width: 200px;
+	.subtitle {
+		margin: 8px 0;
 	}
-  h3 {
-    margin: 0;
-  }
 	.btn {
 		padding: 2px 4px;
 		margin: 0;
@@ -545,81 +510,8 @@
 		color: #206095;
 		background-color: lightgrey;
 	}
-	.btn-active {
-		color: white;
-		background-color: #206095;
-	}
-	.text-big {
-		font-size: 2.2em;
-		font-weight: bold;
-	}
-	.text-med {
-		font-size: 1.8em;
-		font-weight: bold;
-		line-height: 1.7;
-	}
-	.text-small {
-		font-size: 0.85em;
-	}
-	.text-label {
-		font-weight: bold;
-	}
 	.muted {
 		color: grey;
-	}
-	.capitalise {
-		text-transform: capitalize;
-	}
-	.line {
-		background-color: #27A0CC;
-		width: 25px;
-  	height: 2px;
-  	display: inline-block;
-		margin-bottom: 3px;
-	}
-	.text-right {
-		text-align: right;
-	}
-	.float-right {
-		float: right;
-	}
-	.inline {
-		display: inline-block;
-	}
-	.condensed {
-		line-height: 1.1em;
-	}
-	.mt {
-		margin-top: 20px;
-	}
-	.mtl {
-		margin-top: 50px;
-	}
-	.mbs {
-		margin-bottom: 10px;
-	}
-	.grid {
-		display: grid;
-		width: 100%;
-		grid-gap: 10px;
-		grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-		justify-content: stretch;
-		grid-auto-flow: row dense;
-	}
-	#grid {
-		grid-gap: 20px !important;
-	}
-	.chart {
-		position: relative;
-		width: 100%;
-	}
-	#map {
-		grid-row: span 3;
-		min-height: 400px;
-	}
-
-	h1 {
-		font-weight: bold;
 	}
 	select {
 		appearance: none;
@@ -630,7 +522,8 @@
 		outline: 1.5px solid white;
 		border-radius: 3px;
 		padding: 7px 36px 7px 9px;
-		margin-top: 12px;
+		margin: 8px 0;
+		font-size: 1rem;
 	}
 	select:focus {
 		outline-color: rgb(34, 34, 34);
@@ -662,22 +555,40 @@
 		border-left: 5px solid #ff803b;
 		padding: 10px;
 		font-size: 0.9rem;
+		margin-bottom: 5px;
 	}
-  .table-rank {
-    width: 100%;
-  }
-  .w30 {
-    width: 30px;
-  }
+	.num-big {
+		display: block;
+		font-size: 3rem;
+		font-weight: bold;
+		line-height: 1.2;
+	}
+	.num-suffix {
+		display: block;
+		max-width: 100%;
+		margin-left: 2px;
+	}
+	.num-desc {
+		display: block;
+		margin-top: 10px;
+		color: #666;
+	}
+	.num-desc > mark {
+		background-color: lightgrey;
+		font-weight: bold;
+		padding: 0 3px;
+	}
+
 	.chip {
 		display: inline-flex;
 		vertical-align: middle;
 		background-color: rgb(231, 243, 236);
 		font-size: 0.9rem;
 		border: 1.5px solid #0f8243;
-		border-radius: 20px;
+		border-radius: 3px;
 		padding: 5px;
 		margin: 0 5px 5px 0;
+		line-height: normal;
 	}
 	.chip-inactive {
 		background-color: rgb(250, 230, 232);
@@ -701,7 +612,7 @@
 	.chip-inactive button {
 		background-color: #d0021b;
 	}
-	.loader {
+	.chip-loader {
 		box-sizing: border-box;
 		border: 5px solid rgba(0,0,0,0.2);
 		border-radius: 50%;

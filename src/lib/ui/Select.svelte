@@ -125,7 +125,7 @@
 		overflow-x: hidden;
 	}
 	#dropdown li {
-		line-height: 1em;
+		line-height: 1rem;
 		padding: 6px;
 	}
 	#dropdown .highlight {
