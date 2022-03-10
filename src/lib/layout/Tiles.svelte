@@ -6,6 +6,7 @@
 <div class="tiles">
   {#if title}
 	<h2 id="topics">{title}</h2>
+  <slot name="meta"/>
   {/if}
   <div class="tiles-grid margin-bottom">
     <slot/>
@@ -13,6 +14,9 @@
 </div>
 
 <style>
+  #topics {
+    display: inline-block;
+  }
   .tiles-grid {
 		display: grid;
 		width: 100%;

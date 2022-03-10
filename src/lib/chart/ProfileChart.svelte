@@ -4,6 +4,7 @@
 	export let yKey = "value";
 	export let zKey = "group";
 	export let height = 65;
+	export let markerWidth = 2.5;
 	
 	function stackData(data, key) {
 		let data_indexed = {};
@@ -15,9 +16,7 @@
 					values: []
 				};
 			}
-			let len = data_indexed[d[key]].values.length;
-			let offset = len == 0 ? 0 : d[yKey] - data_indexed[d[key]].values[len - 1][yKey];
-			data_indexed[d[key]].values.push({...d, offset});
+			data_indexed[d[key]].values.push(d);
 		}
 		
 		let data_stacked = [];
@@ -40,7 +39,7 @@
 	{#if zDomain[1]}
 	{#each zDomain as group, i}
 	<li>
-		<div class="legend-vis {i == 0 ? 'bar' : 'marker-vis'}"></div>
+		<div class="legend-vis {i == 0 ? 'bar' : 'marker-vis'}" style:border-bottom-width="{i == 0 ? 0 : markerWidth}px"></div>
 		<span class="{i == 0 ? 'bold' : 'brackets'}">{group}</span>
 	</li>
 	{/each}
@@ -51,12 +50,12 @@
 	{#each data_stacked as stack, i}
 	{#if i == 0}
 	{#each stack.values as d, j}
-	<div class="bar" style:top="{100 - yScale(d[yKey])}%" style:height="{yScale(d[yKey])}%" style:left="{(j / xDomain.length) * 100}%" style:width="{(1 / xDomain.length) * 100}%"/>
+	<div class="bar" style:top="{100 - yScale(d[yKey])}%" style:height="{yScale(d[yKey])}%" style:left="{(j / xDomain.length) * 100}%" style:width="calc({(1 / xDomain.length) * 100}% + 0.2px)"/>
 	{/each}
 	
 	{:else}
 	{#each stack.values as d, j}
-	<div class="marker" style:top="calc(100% - {d.offset < 0 ? yScale(d[yKey] - d.offset) : yScale(d[yKey])}%)" style:height="{yScale(d.offset)}%" style:left="{(j / xDomain.length) * 100}%" style:width="{(1 / xDomain.length) * 100}%" style="border-{d.offset < 0 ? 'top' : 'bottom'}: none"/>
+	<div class="marker" style:top="calc(100% - {yScale(d[yKey])}% - {markerWidth / 2}px)" style:height="0px" style:left="{(j / xDomain.length) * 100}%" style:width="{(1 / xDomain.length) * 100}%" style:border-bottom-width="{markerWidth}px"/>
 	{/each}
 	{/if}
 	{/each}
@@ -99,12 +98,9 @@
 	}
 	.bar {
 		background-color: #27A0CC;
-    border-right: 0.5px solid rgb(245, 245, 246);
-    border-left: 0.5px solid rgb(245, 245, 246);
 	}
 	.marker {
-		border-bottom: 2px solid black;
-		border-top: 2px solid black;
+		border-bottom: 2.5px solid black;
 	}
 	.marker-vis {
 		border-bottom: 2px solid black;

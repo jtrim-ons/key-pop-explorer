@@ -45,16 +45,18 @@
 	import { themes, vars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
 	import Titleblock from "$lib/layout/Titleblock.svelte";
 	import Headline from "$lib/layout/partial/Headline.svelte";
-	import BarChart from "$lib/chart/BarChart.svelte";
 	import ProfileChart from "$lib/chart/ProfileChart.svelte";
 	import BreaksChart from "$lib/chart/BreaksChart.svelte";
+	import BarChart from "$lib/chart/BarChart.svelte";
+	import GroupChart from "$lib/chart/GroupChart.svelte";
+	import StackChart from "$lib/chart/StackChart.svelte";
 	import Table from "$lib/chart/Table.svelte";
 	import Map from "$lib/map/Map.svelte";
 	import MapSource from "$lib/map/MapSource.svelte";
 	import MapLayer from "$lib/map/MapLayer.svelte";
 	import Content from "$lib/layout/Content.svelte";
-	import Cards from "$lib/layout/Cards.svelte";
-	import Card from "$lib/layout/partial/Card.svelte";
+	import Tiles from "$lib/layout/Tiles.svelte";
+	import Tile from "$lib/layout/partial/Tile.svelte";
 
   export let geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc;
 
@@ -75,9 +77,10 @@
 		active_cats[d.label] = d.cats[0];
 	});
 	let hovered = null;
-	let status = 'success'; // Options: success, fail, loading
+	let status = "success"; // Options: success, fail, loading
 	let u16 = false; // If age selection is 0-15 some tables won't show data
 	let varcount = 0; // Number of variables successfully loaded
+	let chart_type = BarChart;
 
 	$: ops = vars.filter(d => !selected.map(d => d.topic).includes(d.label));
 
@@ -249,9 +252,9 @@
 </script>
 
 <svelte:head>
-  <title>Census Key Population Explorer</title>
+  <title>Census Population Group Profiles</title>
   <meta name="description" content="">
-  <meta property="og:title" content="Census Key Population Explorer" />
+  <meta property="og:title" content="Census Population Group Profiles" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="{assets}/" />
 	<meta property="og:image:type" content="image/jpeg" />
@@ -262,8 +265,8 @@
 <main id="main" tabindex="-1">
 <Titleblock
 	background="none"
-	breadcrumb="{[{label: 'Census', url: '/census'}, {label: 'Key population explorer'}]}">
-	<Headline>Key population explorer</Headline>
+	breadcrumb="{[{label: 'Census', url: '/census'}, {label: 'Population Group Profiles'}]}">
+	<Headline>Population Group Profiles</Headline>
 	<p class="subtitle">Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion=7&cob=1-5">people of Sikh ethnicity born in the UK</a> or <a href="?age=65-90&cob=6">people aged 65+ born in Ireland</a>.</p>
 	<div slot="meta" class="wrapper">
 	<select bind:value={active} disabled={!ops[0]}>
@@ -316,8 +319,8 @@
 </Titleblock>
 
 <Content>
-	<Cards title="Demographics">
-		<Card title="Population">
+	<Tiles title="Demographics">
+		<Tile title="Population">
 			{#if sum.selected == 0}
 			<div class="num-desc">{texts.nodata}</div>
 			{:else}
@@ -325,8 +328,8 @@
 			<div class="num-suffix">of people in England and Wales</div>
 			<div class="num-desc"><mark>{sum.selected.toLocaleString()}</mark> of {sum.all.toLocaleString()} people</div>
 			{/if}
-		</Card>
-		<Card title="Average (median) age">
+		</Tile>
+		<Tile title="Average (median) age">
 			{#if isNA(data.selected.residents.age.values)}
 			<div class="num-desc">{texts.nodata}</div>
 			{:else}
@@ -336,18 +339,18 @@
       <div class="num-desc"><mark>{getMedianAge(data.all)} years</mark> for whole population</div>
       {/if}
 			{/if}
-		</Card>
-		<Card title="Age profile">
+		</Tile>
+		<Tile title="Age profile">
 			{#if isNA(data.selected.residents.age.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<ProfileChart data="{data.selected && makeDataNew(['residents', 'age'])}"/>
 			{/if}
-		</Card>
-	</Cards>
+		</Tile>
+	</Tiles>
 
-	<Cards title="Population by area">
-		<Card colspan={2} rowspan={2} blank>
+	<Tiles title="Population by area">
+		<Tile colspan={2} rowspan={2} blank>
 			<div style:height="450px">
 			<Map bind:map style={mapStyle}>
 				{#if data.geojson && data.geoPerc}
@@ -403,81 +406,87 @@
 				<BreaksChart breaks={data.geoBreaks} hovered={hovered && data.geoPerc.find(d => d.code == hovered) ? data.geoPerc.find(d => d.code == hovered).value : null} colors={data.geoBreaks[1] == 100 ? [colors.seq[4]] : colors.seq}/>
 			</div>
 			{/if}
-		</Card>
-		<Card title="Areas with highest %">
+		</Tile>
+		<Tile title="Areas with highest %">
 			{#if data.geoPerc && selected[0]}
 			<Table data={[...data.geoPerc].sort((a, b) => b.value - a.value).slice(0, 5)}/>
 			{:else}
 			<span class="muted">Make a selection to see rankings.</span>
 			{/if}
-		</Card>
-		<Card title="Areas with lowest %">
+		</Tile>
+		<Tile title="Areas with lowest %">
 			{#if data.geoPerc && selected[0]}
 			<Table data={data.geoPerc.filter(d => d.value != null).sort((a, b) => b.value - a.value).slice(-5)} offset={data.geoPerc.filter(d => d.value != null).length - 4}/>
 			{:else}
 			<span class="muted">Make a selection to see rankings.</span>
 			{/if}
-		</Card>
-	</Cards>
+		</Tile>
+	</Tiles>
 
-	<Cards title="Key indicators">
-		<Card title="General health">
+	<Tiles title="Key indicators">
+		<span slot="meta" style:margin-left="10px">
+			<strong>Chart type:</strong>
+			<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
+			<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
+			<label><input type=radio bind:group={chart_type} name="chart-type" value={StackChart}>Stacked bar</label>
+		</span>
+		<Tile title="General health">
 			{#if isNA(data.selected.residents.health.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'health'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'health'])}"/>
 			{/if}
-		</Card>
-		<Card title="Marital status">
+		</Tile>
+		<Tile title="Marital status">
 			{#if isNA(data.selected.residents.marital.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'marital'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'marital'])}"/>
 			{/if}
-		</Card>
-		<Card title="Social grade">
+		</Tile>
+		<Tile title="Social grade">
 			{#if isNA(data.selected.residents.grade.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'grade'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'grade'])}"/>
 			{/if}
-		</Card>
-		<Card title="Economic activity">
+		</Tile>
+		<Tile title="Economic activity">
 			{#if isNA(data.selected.residents.economic.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'economic'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'economic'])}"/>
 			{/if}
-		</Card>
-		<Card title="Distance to work (km)">
+		</Tile>
+		<Tile title="Distance to work (km)">
 			{#if isNA(data.selected.residents.distance.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'distance'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'distance'])}"/>
 			{/if}
-		</Card>
-		<Card title="Mode of travel to work">
+		</Tile>
+		<Tile title="Mode of travel to work">
 			{#if isNA(data.selected.residents.travel.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['residents', 'travel'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'travel'])}"/>
 			{/if}
-		</Card>
-		<Card title="Type of housing">
+		</Tile>
+		<Tile title="Type of housing">
 			{#if isNA(data.selected.households.housing.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['households', 'housing'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['households', 'housing'])}"/>
 			{/if}
-		</Card>
-		<Card title="Tenure of housing">
+		</Tile>
+		<Tile title="Tenure of housing">
 			{#if isNA(data.selected.households.tenure.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<BarChart data="{data.selected && makeDataNew(['households', 'tenure'])}"/>
+			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['households', 'tenure'])}"/>
 			{/if}
-		</Card>
-	</Cards>
+		</Tile>
+	</Tiles>
 </Content>
 </main>
 

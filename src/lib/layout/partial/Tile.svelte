@@ -41,6 +41,7 @@
     line-height: 1;
   }
   .tile, .blank {
+    color: black;
     margin: 4px 0 0 !important;
   }
 </style>
