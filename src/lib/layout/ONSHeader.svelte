@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	
-	let path;
+	let path = "";
 	let menuExpanded = false;
 	let searchExpanded = false;
 	// let lang = "en";
@@ -121,13 +121,13 @@
 		<nav aria-label="Header links">
 			<ul class="nav--controls">
 				<li class="nav--controls__item" class:menu-is-expanded={menuExpanded}>
-					<a href="#nav-primary" id="menu-toggle" aria-controls="nav-primary" aria-expanded="{menuExpanded}" class="nav--controls__menu" on:click|preventDefault={() => menuExpanded = !menuExpanded}>
+					<a href="#nav-primary" id="menu-toggle" aria-controls="nav-primary" aria-expanded="{menuExpanded}" class="nav--controls__menu" on:click|preventDefault={() => {menuExpanded = !menuExpanded; searchExpanded = false;}}>
 					<span class="nav--controls__text">Menu</span>
 					</a>
 				</li>
 				<li class="nav--controls__item" class:search-is-expanded={searchExpanded}>
-					<a href="#nav-search" id="search-toggle" aria-controls="nav-search" aria-expanded="{searchExpanded}" class="nav--controls__search" on:click|preventDefault={() => searchExpanded = !searchExpanded}>
-					<span class="nav--controls__text">Search</span>
+					<a href="#nav-search" id="search-toggle" aria-controls="nav-search" aria-expanded="{searchExpanded}" class="nav--controls__search" on:click|preventDefault={() => {searchExpanded = !searchExpanded; menuExpanded = false;}}>
+					<span class="nav--controls__text">{searchExpanded ? 'Hide search' : 'Search'}</span>
 					</a>
 				</li>
 			</ul>

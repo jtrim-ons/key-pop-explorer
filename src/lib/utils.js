@@ -168,10 +168,6 @@ export async function getTopo(url, layer, fetch = window.fetch) {
   return geojson;
 }
 
-export function topo2geo(topojson, layer) {
-  return feature(topojson, layer);
-}
-
 export function capitalise(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

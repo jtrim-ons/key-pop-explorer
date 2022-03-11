@@ -1,5 +1,5 @@
 <script context="module">
-	export const prerender = false;
+	export const prerender = true;
 
   import { getTopo, getData, getGeo } from "$lib/utils";
 	import { ladBounds, datasets, colors } from "$lib/config";
