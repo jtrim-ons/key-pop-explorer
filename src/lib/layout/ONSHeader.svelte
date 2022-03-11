@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	
-	let path = "";
+	export let path;
 	let menuExpanded = false;
 	let searchExpanded = false;
 	// let lang = "en";
@@ -84,7 +84,7 @@
 	}
 	
 	onMount(() => {
-		path = window.location.pathname;
+		path = path ? path : window.location.pathname;
 	});
 </script>
 

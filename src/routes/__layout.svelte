@@ -1,5 +1,6 @@
 <script>
   import { assets } from "$app/paths";
+  import { page } from '$app/stores';
 	import { setContext } from "svelte";
   import "../app.css";
 	import { themes } from "$lib/config";
@@ -19,7 +20,7 @@
 
 <Warning/>
 
-<ONSHeader/>
+<ONSHeader path={$page.url.pathname}/>
 
 <main>
   <slot/>
