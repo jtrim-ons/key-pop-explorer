@@ -1,4 +1,3 @@
-import { csvParse, autoType } from 'd3-dsv';
 import { feature } from 'topojson-client';
 
 const endpoint = 'https://ftb-api-ext.ons.sensiblecode.io/graphql';
@@ -11,17 +10,11 @@ fragment tableDimensions on Table {
   }
 }
 `.replace(/\s+/g, " ");
-const credentials = btoa("ahmad.barclay"+":"+"elope.puck.hails.explore");
+const credentials = "YWhtYWQuYmFyY2xheTplbG9wZS5wdWNrLmhhaWxzLmV4cGxvcmU=";
 const headers = new Headers({
   "Content-Type": "application/json",
   "Authorization": "Basic " + credentials
 });
-
-export async function getCSV(url) {
-  let response = await fetch(url);
-  let string = await response.text();
-  return csvParse(string, autoType);
-}
 
 export async function getData(datasets, sel = [], fetch = window.fetch) {
   let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
@@ -173,6 +166,10 @@ export async function getTopo(url, layer, fetch = window.fetch) {
   let json = await response.json();
   let geojson = await feature(json, layer);
   return geojson;
+}
+
+export function topo2geo(topojson, layer) {
+  return feature(topojson, layer);
 }
 
 export function capitalise(str) {

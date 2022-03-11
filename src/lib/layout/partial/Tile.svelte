@@ -1,13 +1,16 @@
 <script>
+  import { getContext } from "svelte";
+
   export let colspan = 1; // 1, 2 or 3
   export let rowspan = 1;
   export let title = null;
   export let links = null;
   export let blank = false;
+
+  const { cols } = getContext("tiles");
 </script>
 
-
-<div class:blank class="{!blank ? 'tile tile__content' : ''}" style:grid-column="span {colspan}" style:grid-row="span {rowspan}">
+<div class:blank class="{!blank ? 'tile tile__content' : ''}" style:grid-column="span {colspan == 1 ? 1 : colspan > $cols ? $cols : colspan}" style:grid-row="span {rowspan}">
   {#if title}
   <header class="margin-top--1">
     <h3 class="margin-top--0 margin-right--0 margin-bottom--0 margin-left--0">

@@ -3,9 +3,10 @@
 
   import { getTopo, getData, getGeo } from "$lib/utils";
 	import { ladBounds, datasets, colors } from "$lib/config";
+	import { base, assets } from "$app/paths";
 
 	export async function load({ fetch }) {
-    let geojson = await getTopo(ladBounds.url, ladBounds.layer, fetch);
+    let geojson = await getTopo(assets + ladBounds.url, ladBounds.layer, fetch);
 
     let geoLookup = {};
     geojson.features.forEach(d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]);
@@ -36,7 +37,6 @@
 	}
 </script>
 <script>
-  import { base, assets } from "$app/paths";
   import { page } from '$app/stores';
   import { goto, afterNavigate } from '$app/navigation';
   import { setContext } from "svelte";
@@ -66,7 +66,6 @@
   setContext("theme", themes[theme]);
 	
 	// Elements
-	let w, cols;
 	let map = null;
 
 	// State
@@ -230,10 +229,6 @@
 		return i - 1;
 	}
 
-	function onResize() {
-		cols = w < 575 ? 1 : window.getComputedStyle(grid).getPropertyValue("grid-template-columns").split(" ").length;
-	}
-
   afterNavigate(() => {
     selected = []
     for (let pair of $page.url.searchParams.entries()) {
@@ -247,8 +242,6 @@
     }
     loadData();
   });
-
-	$: w && onResize();
 </script>
 
 <svelte:head>

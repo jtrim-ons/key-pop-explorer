@@ -1,5 +1,3 @@
-import { assets } from "$app/paths";
-
 // CORE CONFIG
 export const themes = {
   'light': {
@@ -347,7 +345,7 @@ export const codes = {
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
 export const ladBounds = {
-	url: assets + "/data/lad2015.json",
+	url: "/data/lad2015.json",
 	layer: "LAD15merc",
 	code: "AREACD",
 	name: "AREANM"

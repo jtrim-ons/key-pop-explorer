@@ -23,7 +23,6 @@
 	export let zoomcontrol = true;
 
 	let container;
-	let w;
 	let options;
 
 	setContext("map", {
@@ -83,21 +82,9 @@
 			link.parentNode.removeChild(link);
 		};
 	});
-
-	// Function that forces map to resize to fit parent div, in case it doesn't automatically
-	function resizeCanvas() {
-		let canvas = document.getElementsByClassName("mapboxgl-canvas");
-		if (canvas[0]) {
-			canvas[0].style.width = "100%";
-			map.resize();
-		}
-	}
-
-	// Invoke above function when parent div size changes
-	$: w && resizeCanvas();
 </script>
 
-<div class="absolute top-0 bg-grey4 w-full h-full" bind:clientWidth={w} bind:this={container} {id}>
+<div bind:this={container} {id}>
 	{#if map}
 		<slot />
 	{/if}
