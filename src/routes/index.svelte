@@ -1,5 +1,5 @@
 <script context="module">
-	export const prerender = true;
+	export const prerender = false;
 
   import { getTopo, getData, getGeo } from "$lib/utils";
 	import { ladBounds, datasets, colors } from "$lib/config";
@@ -80,6 +80,8 @@
 	let u16 = false; // If age selection is 0-15 some tables won't show data
 	let varcount = 0; // Number of variables successfully loaded
 	let chart_type = BarChart;
+
+	let refreshed = false; // 
 
 	$: ops = vars.filter(d => !selected.map(d => d.topic).includes(d.label));
 
@@ -243,7 +245,6 @@
     loadData();
 	}
 
-	onMount(refreshData); // Refresh data when app is first loaded (in case URL includes ?query)
 	afterNavigate(refreshData); // Refresh data when user navigates
 </script>
 
