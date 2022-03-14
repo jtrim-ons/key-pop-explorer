@@ -16,15 +16,15 @@
   // Set theme globally (options are 'light' or 'dark')
   let theme = "light";
   setContext("theme", themes[theme]);
-
-  console.log($page);
 </script>
 
 <svelte:head>
   <link rel="icon" href="{assets}/favicon.png" />
 </svelte:head>
 
-<Warning/>
+<Warning>
+  WARNING! This is a prototype. Data is synthetic. It is NOT actual 2021 Census data.
+</Warning>
 
 <ONSHeader {baseurl} {path} {lang}/>
 

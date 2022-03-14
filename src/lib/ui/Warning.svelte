@@ -4,10 +4,12 @@
 
 <aside role="alert" class="warning" bind:clientHeight={height}>
   <div class="wrapper middle">
-    <strong>WARNING! This is a prototype. Data is synthetic. It is NOT actual 2021 Census data.</strong>
+    <strong>
+      <slot/>
+    </strong>
   </div>
 </aside>
-<div class="spacer" style:height="{height}px"/>
+<div class="spacer" style:height="{height ? height: 40}px"/>
 
 <style>
   .warning {
