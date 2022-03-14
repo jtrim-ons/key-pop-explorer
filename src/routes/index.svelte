@@ -39,7 +39,7 @@
 <script>
   import { page } from '$app/stores';
   import { goto, afterNavigate } from '$app/navigation';
-  import { setContext } from "svelte";
+  import { onMount, setContext } from "svelte";
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
 	import { themes, vars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
@@ -229,8 +229,8 @@
 		return i - 1;
 	}
 
-  afterNavigate(() => {
-    selected = []
+	function refreshData() {
+		selected = []
     for (let pair of $page.url.searchParams.entries()) {
       let variable = vars.find(d => d.key == pair[0]);
       if (variable) {
@@ -241,7 +241,10 @@
       }
     }
     loadData();
-  });
+	}
+
+	onMount(refreshData); // Refresh data when app is first loaded (in case URL includes ?query)
+	afterNavigate(refreshData); // Refresh data when user navigates
 </script>
 
 <svelte:head>
