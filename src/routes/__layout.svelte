@@ -7,11 +7,17 @@
 	import Warning from "$lib/ui/Warning.svelte";
 	import ONSHeader from "$lib/layout/ONSHeader.svelte";
 	import ONSFooter from "$lib/layout/ONSFooter.svelte";
+	
+  let path = $page.url.pathname;
+  let lang = $page.url.hostname.split(".")[0] == "cy" ? "cy" : "en";
+  let baseurl = lang == "cy" ? "//cy.ons.gov.uk" : "//www.ons.gov.uk";
 
   // STYLE CONFIG
   // Set theme globally (options are 'light' or 'dark')
   let theme = "light";
   setContext("theme", themes[theme]);
+
+  console.log($page);
 </script>
 
 <svelte:head>
@@ -20,10 +26,10 @@
 
 <Warning/>
 
-<ONSHeader path={$page.url.pathname}/>
+<ONSHeader {baseurl} {path} {lang}/>
 
 <main>
   <slot/>
 </main>
 
-<ONSFooter/>
+<ONSFooter {baseurl} {lang}/>
