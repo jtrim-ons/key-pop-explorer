@@ -19,13 +19,13 @@
 
 </script>
 
-<span class="em" class:nowrap style="background-color: {color}; color: {text};" role="presentation">
+<mark class="em" class:nowrap style="background-color: {color}; color: {text};" role="presentation">
   <slot></slot>
-</span>
+</mark>
 
 <style>
 	.em {
-		padding: 1px 4px 1px 4px;
+		padding: 1px 4px;
 		font-weight: bold;
 	}
 	.nowrap {

@@ -39,7 +39,7 @@
 <script>
   import { page } from '$app/stores';
   import { goto, afterNavigate } from '$app/navigation';
-  import { onMount, setContext } from "svelte";
+  import { setContext } from "svelte";
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
 	import { themes, vars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
@@ -57,6 +57,7 @@
 	import Content from "$lib/layout/Content.svelte";
 	import Tiles from "$lib/layout/Tiles.svelte";
 	import Tile from "$lib/layout/partial/Tile.svelte";
+	import Em from "$lib/ui/Em.svelte";
 
   export let geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc;
 
@@ -80,8 +81,6 @@
 	let u16 = false; // If age selection is 0-15 some tables won't show data
 	let varcount = 0; // Number of variables successfully loaded
 	let chart_type = BarChart;
-
-	let refreshed = false; // 
 
 	$: ops = vars.filter(d => !selected.map(d => d.topic).includes(d.label));
 
@@ -323,7 +322,7 @@
 			{:else}
 			<div class="num-big">{Math.round((sum.selected / sum.all) * 100) > 0 ? Math.round((sum.selected / sum.all) * 100) : '<1'}%</div>
 			<div class="num-suffix">of people in England and Wales</div>
-			<div class="num-desc"><mark>{sum.selected.toLocaleString()}</mark> of {sum.all.toLocaleString()} people</div>
+			<div class="num-desc"><Em color="lightgrey">{sum.selected.toLocaleString()}</Em> of {sum.all.toLocaleString()} people</div>
 			{/if}
 		</Tile>
 		<Tile title="Average (median) age">
@@ -333,7 +332,7 @@
 			<div class="num-big">{getMedianAge(data.selected)}</div>
 			<div class="num-suffix">years</div>
 			{#if sum.all != sum.selected}
-      <div class="num-desc"><mark>{getMedianAge(data.all)} years</mark> for whole population</div>
+      <div class="num-desc"><Em color="lightgrey">{getMedianAge(data.all)} years</Em> for whole population</div>
       {/if}
 			{/if}
 		</Tile>
@@ -578,11 +577,6 @@
 		display: block;
 		margin-top: 10px;
 		color: #666;
-	}
-	.num-desc > mark {
-		background-color: lightgrey;
-		font-weight: bold;
-		padding: 0 3px;
 	}
 
 	.chip {
