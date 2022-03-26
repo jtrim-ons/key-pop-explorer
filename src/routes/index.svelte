@@ -258,7 +258,6 @@
 	<meta name="description" content="" />
 </svelte:head>
 
-<main id="main" tabindex="-1">
 <Titleblock
 	background="none"
 	breadcrumb="{[{label: 'Census', url: '/census'}, {label: 'Population Group Profiles'}]}">
@@ -484,7 +483,6 @@
 		</Tile>
 	</Tiles>
 </Content>
-</main>
 
 <style>
 	:global(.tile) {

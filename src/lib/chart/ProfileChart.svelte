@@ -33,6 +33,8 @@
 	$: yScale = (value) => Math.abs(value / yDomain[1]) * 100;
 	
 	$: data_stacked = stackData(data, zKey);
+
+	$: console.log(data);
 </script>
 
 <ul class="legend-block">

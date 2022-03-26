@@ -12,6 +12,7 @@ fragment tableDimensions on Table {
 `.replace(/\s+/g, " ");
 const credentials = "YWhtYWQuYmFyY2xheTplbG9wZS5wdWNrLmhhaWxzLmV4cGxvcmU=";
 const headers = new Headers({
+  "Accept": "application/json",
   "Content-Type": "application/json",
   "Authorization": "Basic " + credentials
 });
