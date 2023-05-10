@@ -19,16 +19,21 @@ const headers = new Headers({
   "Authorization": "Basic " + credentials
 });
 
+function getSelString(sel) {
+  let selected = [...sel].sort((a, b) => a.key.localeCompare(b.key));
+  let selString = sel.length == 0 ?
+      "data" :
+      selected.map(s => `${s.key}-${s.code}`).join('-');
+  return selString;
+}
+
 export async function getData(datasets, sel = [], fetch = window.fetch) {
   console.log({datasets, sel});
 
   if (sel.length == 0 || sel[0].newFormat) {
     console.log("NEW FORMAT!")
-    let selected = [...sel].sort((a, b) => a.key.localeCompare(b.key));
-    let selString = sel.length == 0 ?
-        "data" :
-        selected.map(s => `${s.key}-${s.code}`).join('-');
-    let url = `${newEndpoint}${selected.length}var/${selString}.json`
+    let selString = getSelString(sel);
+    let url = `${newEndpoint}${sel.length}var/${selString}.json`
     console.log({url});
     let response = await fetch(url);
     let json = await response.json();
@@ -126,47 +131,55 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
 }
 
 export async function getGeo(sel = [], fetch = window.fetch) {
-  let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
-  let variables = [];
-  let filters = [];
-  if (selected[0]) {
-    selected.forEach(item => {
-      if (item.var) {
-        variables.push(item.var);
-        filters.push(`{variable: "${item.var}", codes: ["${item.code}"]}`);
-      }
-    });
-  }
-  let vars = variables[0] ? '"' + variables.join('","') + '",' : '';
-  filters = filters[0] ? '[' + filters.join(',') + ']' : '[]';
-
-  const query = `
-  query {
-    dataset(name:"Usual-Residents") {
-      table(
-        variables: ["LA"${vars}]
-        filters: ${filters}
-      )
-      {
-        ...tableDimensions
-        values
-      }
-    }
-  }
-  `.replace(/\s+/g, " ");
-
-	const ops = {
-		body: JSON.stringify({
-			"query": query + frag
-		}),
-		headers: headers,
-		method: "POST",
-		mode: "cors"
-	};
-	
-	let response = await fetch(endpoint, ops);
+  let selString = getSelString(sel);
+  let url = `${newEndpoint}${sel.length}var-by-ltla/${selString}_by_geog.json`
+  console.log({url});
+  let response = await fetch(url);
   let json = await response.json();
   return json;
+
+  // let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
+  // let variables = [];
+  // let filters = [];
+  // if (selected[0]) {
+  //   selected.forEach(item => {
+  //     if (item.var) {
+  //       variables.push(item.var);
+  //       filters.push(`{variable: "${item.var}", codes: ["${item.code}"]}`);
+  //     }
+  //   });
+  // }
+  // let vars = variables[0] ? '"' + variables.join('","') + '",' : '';
+  // filters = filters[0] ? '[' + filters.join(',') + ']' : '[]';
+
+  // const query = `
+  // query {
+  //   dataset(name:"Usual-Residents") {
+  //     table(
+  //       variables: ["LA"${vars}]
+  //       filters: ${filters}
+  //     )
+  //     {
+  //       ...tableDimensions
+  //       values
+  //     }
+  //   }
+  // }
+  // `.replace(/\s+/g, " ");
+
+	// const ops = {
+	// 	body: JSON.stringify({
+	// 		"query": query + frag
+	// 	}),
+	// 	headers: headers,
+	// 	method: "POST",
+	// 	mode: "cors"
+	// };
+	
+	// let response = await fetch(endpoint, ops);
+  // let json = await response.json();
+  // console.log({response, json})
+  // return json;
 }
 
 export function getColor(value, breaks, colors) {

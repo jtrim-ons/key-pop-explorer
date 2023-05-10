@@ -15,17 +15,11 @@
     let sumAll = makeSum(json.data.residents.health_in_general.values);  // WAS: makeSum(json.data.residents.health.values)
 		let dataAll = json.data;
 
-    let geo = await getGeo([], fetch);
+    let geoAll = await getGeo([], fetch);
     let geoPerc = [];
 
-    let categories = geo.data.dataset.table.dimensions[0].categories;
-		let geoCodes = categories.map(d => d.code.slice(-9));
-    let values = geo.data.dataset.table.values;
+		let geoCodes = Object.keys(geoAll);
 
-    let geoAll = {};
-    geoCodes.forEach((code, i) => {
-      geoAll[code] = values[i];
-    });
     geoCodes.forEach(code => {
       geoPerc.push({code: code, name: geoLookup[code], value: 100});
     });
@@ -128,24 +122,14 @@
 				sum.selected = makeSum(json.data.residents.health_in_general.values);  // WAS: sum.selected = makeSum(json.data.residents.health.values);
 				data.selected = json.data;
 
-				0 && getGeo(selected)   // FIXME: remove 0 &&
-				.then(json => {
+				getGeo(selected)
+				.then(geoData => {
 					let array = [];
 					let groups = null;
 
-					if (json.data.dataset.table.dimensions) {
-						let categories = json.data.dataset.table.dimensions[0].categories;
-						let codes = categories.map(d => d.code.slice(-9));
-					
-						let values = json.data.dataset.table.values;
-
-						let index = {};
-						codes.forEach((code, i) => {
-							index[code] = values[i];
-						});
-
+					if (true) {
 						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: index[code] ? (index[code] / data.geoAll[code]) * 100 : null});
+							array.push({code: code, name: data.geoLookup[code], value: geoData[code] ? (geoData[code] / data.geoAll[code]) * 100 : null});
 						});
 
 						let vals = array.map(d => d.value).filter(d => d != null);
