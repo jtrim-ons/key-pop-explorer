@@ -2,7 +2,7 @@
 	export const prerender = false;
 
   import { getTopo, getData, getGeo } from "$lib/utils";
-	import { ladBounds, datasets, colors } from "$lib/config";
+	import { ladBounds, datasets, newDatasets, colors } from "$lib/config";
 	import { base, assets } from "$app/paths";
 
 	export async function load({ fetch }) {
@@ -11,8 +11,8 @@
     let geoLookup = {};
     geojson.features.forEach(d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]);
 
-    let json = await getData(datasets, [], fetch);
-    let sumAll = makeSum(json.data.residents.health.values);
+    let json = await getData(newDatasets, [], fetch);
+    let sumAll = makeSum(json.data.residents.health_in_general.values);  // WAS: makeSum(json.data.residents.health.values)
 		let dataAll = json.data;
 
     let geo = await getGeo([], fetch);
@@ -42,7 +42,7 @@
   import { setContext } from "svelte";
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
-	import { themes, vars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
+	import { themes, vars as vars_, newVars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
 	import Titleblock from "$lib/layout/Titleblock.svelte";
 	import Headline from "$lib/layout/partial/Headline.svelte";
 	import ProfileChart from "$lib/chart/ProfileChart.svelte";
@@ -60,6 +60,8 @@
 	import Em from "$lib/ui/Em.svelte";
 
   export let geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc;
+
+	let vars = vars_.concat(newVars);
 
   // STYLE CONFIG
   // Set theme globally (options are 'light' or 'dark')
@@ -120,13 +122,13 @@
 			u16 = false;
 		}
 
-		getData(datasets, selected)
+		getData(newDatasets, selected)
 		.then(json => {
-			if (json.data.residents.age.values) {
-				sum.selected = makeSum(json.data.residents.health.values);
+			if (json.data.residents.sex.values) {  // 	WAS: if (json.data.residents.age.values) {
+				sum.selected = makeSum(json.data.residents.health_in_general.values);  // WAS: sum.selected = makeSum(json.data.residents.health.values);
 				data.selected = json.data;
 
-				getGeo(selected)
+				0 && getGeo(selected)   // FIXME: remove 0 &&
 				.then(json => {
 					let array = [];
 					let groups = null;
@@ -216,6 +218,24 @@
 
 		return arr;
 	}
+
+	function makeDataNewNew(props) {
+		let group = props[0];
+		let dataset = props[1];
+		let valsSelected = data.selected[group][dataset];
+		let valsAll = data.all[group][dataset];
+		console.log({valsSelected})
+		codes[dataset].forEach(cd => {
+			console.log(cd)
+		});
+		let result = [];
+		for (let code of codes[dataset]) {
+			result.push({group: "This group", category: code.label, value: valsSelected.values[code.cells[0]] / makeSum(valsSelected.values) * 100});
+			result.push({group: "Whole population", category: code.label, value: valsAll.values[code.cells[0]] / makeSum(valsAll.values) * 100});
+		}
+		return result;
+	}
+
 
 	function getMedianAge(dataset) {
 		let values = dataset.residents.age.values;
@@ -324,7 +344,7 @@
 			<div class="num-desc"><Em color="lightgrey">{sum.selected.toLocaleString()}</Em> of {sum.all.toLocaleString()} people</div>
 			{/if}
 		</Tile>
-		<Tile title="Average (median) age">
+		<!-- <Tile title="Average (median) age">
 			{#if isNA(data.selected.residents.age.values)}
 			<div class="num-desc">{texts.nodata}</div>
 			{:else}
@@ -334,14 +354,14 @@
       <div class="num-desc"><Em color="lightgrey">{getMedianAge(data.all)} years</Em> for whole population</div>
       {/if}
 			{/if}
-		</Tile>
-		<Tile title="Age profile">
+		</Tile> -->
+		<!-- <Tile title="Age profile">
 			{#if isNA(data.selected.residents.age.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<ProfileChart data="{data.selected && makeDataNew(['residents', 'age'])}"/>
 			{/if}
-		</Tile>
+		</Tile> -->
 	</Tiles>
 
 	<Tiles title="Population by area">
@@ -426,27 +446,36 @@
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={StackChart}>Stacked bar</label>
 		</span>
 		<Tile title="General health">
-			{#if isNA(data.selected.residents.health.values)}
+			{#if !("health" in data.selected.residents) || isNA(data.selected.residents.health.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'health'])}"/>
 			{/if}
 		</Tile>
-		<Tile title="Marital status">
+		<Tile title="General health NEW">
+			{#if (console.log(data.selected), !("health_in_general" in data.selected.residents))}
+      <span class="num-desc">{texts.nodata}</span>
+      {:else}
+			<svelte:component this={chart_type} data="{
+						data.selected && (console.log(makeDataNewNew(['residents', 'health_in_general'])), makeDataNewNew(['residents', 'health_in_general']))
+					}"/>
+			{/if}
+		</Tile>
+		<!-- <Tile title="Marital status">
 			{#if isNA(data.selected.residents.marital.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'marital'])}"/>
 			{/if}
-		</Tile>
-		<Tile title="Social grade">
+		</Tile> -->
+		<!-- <Tile title="Social grade">
 			{#if isNA(data.selected.residents.grade.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'grade'])}"/>
 			{/if}
-		</Tile>
-		<Tile title="Economic activity">
+		</Tile> -->
+		<!-- <Tile title="Economic activity">
 			{#if isNA(data.selected.residents.economic.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
@@ -480,7 +509,7 @@
       {:else}
 			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['households', 'tenure'])}"/>
 			{/if}
-		</Tile>
+		</Tile> -->
 	</Tiles>
 </Content>
 

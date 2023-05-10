@@ -1,5 +1,7 @@
 import { feature } from 'topojson-client';
 
+const newEndpoint = "https://raw.githubusercontent.com/jtrim-ons/key-pop-api-downloader/main/generated/";
+
 const endpoint = 'https://ftb-api-ext.ons.sensiblecode.io/graphql';
 const frag = `
 fragment tableDimensions on Table {
@@ -18,6 +20,32 @@ const headers = new Headers({
 });
 
 export async function getData(datasets, sel = [], fetch = window.fetch) {
+  console.log({datasets, sel});
+
+  if (sel.length == 0 || sel[0].newFormat) {
+    console.log("NEW FORMAT!")
+    let selected = [...sel].sort((a, b) => a.key.localeCompare(b.key));
+    let selString = sel.length == 0 ?
+        "data" :
+        selected.map(s => `${s.key}-${s.code}`).join('-');
+    let url = `${newEndpoint}${selected.length}var/${selString}.json`
+    console.log({url});
+    let response = await fetch(url);
+    let json = await response.json();
+    json.newFormat = true;
+    let retval = {data: {}};
+    for (let dataset of datasets) {
+      retval.data[dataset.key] = {};
+      for (let table of dataset.tables) {
+        retval.data[dataset.key][table.code] = {values: json[table.code]};
+      }
+    }
+    console.log({json, retval});
+    return retval;
+  }
+
+  console.log("OLD FORMAT!")
+
   let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
 
   let variables = [];
@@ -174,7 +202,7 @@ export function capitalise(str) {
 }
 
 export function makeSum(values) {
-  return values ? values.reduce((a, b) => a + b) : 0;
+  return values ? Object.values(values).reduce((a, b) => a + b) : 0;
 }
 
 export function isNA(arr) {
