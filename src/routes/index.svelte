@@ -208,10 +208,6 @@
 		let dataset = props[1];
 		let valsSelected = data.selected[group][dataset];
 		let valsAll = data.all[group][dataset];
-		console.log({valsSelected})
-		codes[dataset].forEach(cd => {
-			console.log(cd)
-		});
 		let result = [];
 		for (let code of codes[dataset]) {
 			result.push({group: "This group", category: code.label, value: valsSelected.values[code.cells[0]] / makeSum(valsSelected.values) * 100});
@@ -339,13 +335,13 @@
       {/if}
 			{/if}
 		</Tile> -->
-		<!-- <Tile title="Age profile">
-			{#if isNA(data.selected.residents.age.values)}
+		<Tile title="Age profile">
+			{#if isNA(data.selected.residents.resident_age_18b.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<ProfileChart data="{data.selected && makeDataNew(['residents', 'age'])}"/>
+			<ProfileChart data="{data.selected && makeDataNew(['residents', 'resident_age_18b'])}"/>
 			{/if}
-		</Tile> -->
+		</Tile>
 	</Tiles>
 
 	<Tiles title="Population by area">
@@ -436,15 +432,18 @@
 			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'health'])}"/>
 			{/if}
 		</Tile>
-		<Tile title="General health NEW">
-			{#if (console.log(data.selected), !("health_in_general" in data.selected.residents))}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{
-						data.selected && (console.log(makeDataNewNew(['residents', 'health_in_general'])), makeDataNewNew(['residents', 'health_in_general']))
-					}"/>
-			{/if}
-		</Tile>
+		{#each (console.log(newDatasets), newDatasets[0].tables.slice(1)) as table}
+			<Tile title="{table.key}">
+				<!-- FIXME: check for missing data -->
+				{#if !(table.code in data.selected.residents) || data.selected.residents[table.code].values == null}
+				<span class="num-desc">{texts.nodata}</span>
+				{:else}
+				<svelte:component this={chart_type} data="{
+							data.selected && makeDataNewNew(['residents', table.code])
+						}"/>
+				{/if}
+			</Tile>
+		{/each}
 		<!-- <Tile title="Marital status">
 			{#if isNA(data.selected.residents.marital.values)}
       <span class="num-desc">{texts.nodata}</span>
