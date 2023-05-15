@@ -395,8 +395,8 @@ outputClassifications.forEach(c => {
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
 export const ladBounds = {
-	url: "/data/lad2015.json",
-	layer: "LAD15merc",
-	code: "AREACD",
-	name: "AREANM"
+	url: "/data/lad-cty-rgn-ctry-ew.json",
+	layer: "lad",
+	code: "areacd",
+	name: "areanm"
 }
