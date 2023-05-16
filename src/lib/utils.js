@@ -215,7 +215,16 @@ export function capitalise(str) {
 }
 
 export function makeSum(values) {
-  return values ? Object.values(values).reduce((a, b) => a + b) : 0;
+  // TODO: check if this check is appropriate here.
+  if (!values) return 0;
+
+  let sum = 0;
+  for (let key in values) {
+    if (key != '-8') {
+      sum += values[key];
+    }
+  }
+  return sum;
 }
 
 export function isNA(arr) {

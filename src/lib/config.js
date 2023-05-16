@@ -2,6 +2,8 @@ import allClassifications from './all-classifications.json';
 import inputClassifications from './input-classifications.json';
 import outputClassifications from './output-classifications.json';
 
+console.log(allClassifications);
+
 // CORE CONFIG
 export const themes = {
 	'light': {
@@ -46,7 +48,7 @@ outputClassifications.forEach(c => {
     newDatasets[0].tables.push({
         key: c.label,
         code: c.id,
-        categories: new Map(c.categories.map(d => [d.id, d.label]))
+        categories: new Map(c.categories.filter(d => d.id != '-8').map(d => [d.id, d.label]))
     });
 });
 
@@ -390,7 +392,7 @@ export const codes = {
 
 outputClassifications.forEach(c => {
 	c = allClassifications[c];
-	codes[c.id] = c.categories.map(d => ({label: d.label, cells: [d.id]}));
+	codes[c.id] = c.categories.filter(d => d.id != '-8').map(d => ({label: d.label, cells: [d.id]}));
 });
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
