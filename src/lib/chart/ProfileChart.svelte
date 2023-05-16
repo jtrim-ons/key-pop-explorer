@@ -65,7 +65,7 @@
 
 <div class="x-scale" style:height="1rem">
 	<div style:left={0}>0 years</div>
-	<div style:right={0}>90+</div>
+	<div style:right={0}>85+</div>
 </div>
 
 <style>
