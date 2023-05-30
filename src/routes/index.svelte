@@ -2,7 +2,7 @@
 	export const prerender = false;
 
   import { getTopo, getData, getGeo } from "$lib/utils";
-	import { ladBounds, datasets, newDatasets, colors } from "$lib/config";
+	import { ladBounds, datasets, newDatasets, colors, populationBases } from "$lib/config";
 	import { base, assets } from "$app/paths";
 
 	export async function load({ fetch }) {
@@ -339,7 +339,10 @@
 			{#if isNA(data.selected.residents.resident_age_18b.values)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
-			<ProfileChart data="{data.selected && makeDataNew(['residents', 'resident_age_18b'])}"/>
+			<ProfileChart
+					data="{data.selected && makeDataNew(['residents', 'resident_age_18b'])}"
+					zKey="group"
+					/>
 			{/if}
 		</Tile>
 	</Tiles>
@@ -442,6 +445,7 @@
 							data.selected && makeDataNewNew(['residents', table.code])
 						}"/>
 				{/if}
+				<span class="num-desc">Percentage of {populationBases[table.code]}</span>
 			</Tile>
 		{/each}
 		<!-- <Tile title="Marital status">
