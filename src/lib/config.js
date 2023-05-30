@@ -1,6 +1,9 @@
 import allClassifications from './all-classifications.json';
 import inputClassifications from './input-classifications.json';
 import outputClassifications from './output-classifications.json';
+import populationBases_ from "$lib/population-bases.json";
+
+export const populationBases = populationBases_;
 
 console.log(allClassifications);
 
