@@ -129,7 +129,7 @@
 
 					if (true) {
 						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: geoData[code] ? (geoData[code] / data.geoAll[code]) * 100 : null});
+							array.push({code: code, name: data.geoLookup[code], value: geoData[code] != null ? (geoData[code] / data.geoAll[code]) * 100 : null});
 						});
 
 						let vals = array.map(d => d.value).filter(d => d != null);
@@ -153,7 +153,7 @@
 						if (breaks[breaks.length - 1] == breaks[breaks.length - 2]) {
 							breaks.pop();
 						}
-						array.forEach(d => d.color = d.value ? getColor(d.value, breaks, colors.seq) : colors.nodata);
+						array.forEach(d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata);
 						data.geoBreaks = breaks;
 					}
 
