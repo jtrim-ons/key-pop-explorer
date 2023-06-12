@@ -39,7 +39,7 @@ export const spacer = '&nbsp;&nbsp;&nbsp;&nbsp;';
 export const arrow = '&rtrif;&nbsp;&nbsp;'
 
 export let newDatasets = [
-    {
+  {
 		key: 'residents',
 		code: 'Usual-Residents',
 		tables: []
@@ -101,7 +101,8 @@ inputClassifications.forEach(c => {
 newVars.sort((a, b) => a.label.localeCompare(b.label));
 
 // The things you can select
-export const vars = [
+export const vars = [];
+/* export const vars = [
 	{
 		label: "sex",
 		key: "sex",
@@ -308,6 +309,7 @@ export const vars = [
 	// 	]
 	// }
 ].sort((a, b) => a.label.localeCompare(b.label));
+*/
 
 console.log({newVars, vars});
 
