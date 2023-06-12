@@ -428,18 +428,11 @@
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={StackChart}>Stacked bar</label>
 		</span>
-		<Tile title="General health">
-			{#if !("health" in data.selected.residents) || isNA(data.selected.residents.health.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'health'])}"/>
-			{/if}
-		</Tile>
-		{#each (console.log(newDatasets), newDatasets[0].tables.slice(1)) as table}
+		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
 			<Tile title="{table.key}">
 				<!-- FIXME: check for missing data -->
 				{#if !(table.code in data.selected.residents) || data.selected.residents[table.code].values == null}
-				<span class="num-desc">{texts.nodata}</span>
+					<span class="num-desc">{texts.nodata}</span>
 				{:else}
 				<svelte:component this={chart_type} data="{
 							data.selected && makeDataNewNew(['residents', table.code])
