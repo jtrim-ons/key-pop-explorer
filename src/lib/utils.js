@@ -23,7 +23,12 @@ function getSelString(sel) {
   let selected = [...sel].sort((a, b) => a.key.localeCompare(b.key));
   let selString = sel.length == 0 ?
       "data" :
-      selected.map(s => `${s.key}-${s.code}`).join('-');
+      selected.map((s, i) => {
+        if (i < selected.length - 1)
+          return `${s.key}-${s.code}`;
+        else
+          return `${s.key}`;
+      }).join('/');
   return selString;
 }
 
@@ -37,6 +42,8 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
     console.log({url});
     let response = await fetch(url);
     let json = await response.json();
+    if (sel.length > 0)
+      json = json[sel[sel.length - 1].code];
     json.newFormat = true;
     let retval = {data: {}};
     for (let dataset of datasets) {
@@ -136,6 +143,8 @@ export async function getGeo(sel = [], fetch = window.fetch) {
   console.log({url});
   let response = await fetch(url);
   let json = await response.json();
+  if (sel.length > 0)
+    json = json[sel[sel.length - 1].code];
   return json;
 
   // let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
