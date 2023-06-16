@@ -243,3 +243,7 @@ export function isNA(arr) {
   let sum = arr ? arr.slice(0,-1).reduce((a, b) => a + b) : 0;
   return sum == 0;
 }
+
+export function removeCategoryCountFromName(name) {
+  return name.replace(new RegExp(" \\([0-9]* categories\\)"), "");
+}

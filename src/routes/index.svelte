@@ -1,7 +1,7 @@
 <script context="module">
 	export const prerender = false;
 
-  import { getTopo, getData, getGeo } from "$lib/utils";
+  import { getTopo, getData, getGeo, removeCategoryCountFromName } from "$lib/utils";
 	import { ladBounds, datasets, newDatasets, colors, populationBases } from "$lib/config";
 	import { base, assets } from "$app/paths";
 
@@ -210,8 +210,8 @@
 		let valsAll = data.all[group][dataset];
 		let result = [];
 		for (let code of codes[dataset]) {
-			result.push({group: "This group", category: code.label, value: valsSelected.values[code.cells[0]] / makeSum(valsSelected.values) * 100});
-			result.push({group: "Whole population", category: code.label, value: valsAll.values[code.cells[0]] / makeSum(valsAll.values) * 100});
+			result.push({group: "This group", category: code.label + " (" + code.cells + ")", value: valsSelected.values[code.cells[0]] / makeSum(valsSelected.values) * 100});
+			result.push({group: "Whole population", category: code.label + " (" + code.cells + ")", value: valsAll.values[code.cells[0]] / makeSum(valsAll.values) * 100});
 		}
 		return result;
 	}
@@ -429,7 +429,7 @@
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={StackChart}>Stacked bar</label>
 		</span>
 		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
-			<Tile title="{table.key}">
+			<Tile title="{removeCategoryCountFromName(table.key)}">
 				<!-- FIXME: check for missing data -->
 				{#if !(table.code in data.selected.residents) || data.selected.residents[table.code].values == null}
 					<span class="num-desc">{texts.nodata}</span>
