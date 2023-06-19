@@ -203,18 +203,18 @@
 		return arr;
 	}
 
-	function makeDataNewNew(props) {
-		let group = props[0];
-		let dataset = props[1];
-		let valsSelected = data.selected[group][dataset];
-		let valsAll = data.all[group][dataset];
-		let result = [];
-		for (let code of codes[dataset]) {
-			result.push({group: "This group", category: code.label + " (" + code.cells + ")", value: valsSelected.values[code.cells[0]] / makeSum(valsSelected.values) * 100});
-			result.push({group: "Whole population", category: code.label + " (" + code.cells + ")", value: valsAll.values[code.cells[0]] / makeSum(valsAll.values) * 100});
-		}
-		return result;
-	}
+	// function makeDataNewNew(props) {
+	// 	let group = props[0];
+	// 	let dataset = props[1];
+	// 	let valsSelected = data.selected[group][dataset].values;
+	// 	let valsAll = data.all[group][dataset].values;
+	// 	let result = [];
+	// 	for (let code of codes[dataset]) {
+	// 		result.push({group: "This group", category: code.label + " (" + code.cells + ")", value: valsSelected[code.cells[0]] / makeSum(valsSelected) * 100});
+	// 		result.push({group: "Whole population", category: code.label + " (" + code.cells + ")", value: valsAll[code.cells[0]] / makeSum(valsAll) * 100});
+	// 	}
+	// 	return result;
+	// }
 
 
 	function getMedianAge(dataset) {
@@ -435,7 +435,7 @@
 					<span class="num-desc">{texts.nodata}</span>
 				{:else}
 				<svelte:component this={chart_type} data="{
-							data.selected && makeDataNewNew(['residents', table.code])
+							data.selected && makeDataNew(['residents', table.code])
 						}"/>
 				{/if}
 				<span class="num-desc">Percentage of {populationBases[table.code]}</span>

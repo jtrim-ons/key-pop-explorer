@@ -1,6 +1,6 @@
 import allClassifications from './all-classifications.json';
 import inputClassifications from './input-classifications.json';
-import outputClassifications from './output-classifications.json';
+import outputClassifications from './output-classifications-with-details';
 import populationBases_ from "$lib/population-bases.json";
 
 export const populationBases = populationBases_;
@@ -38,6 +38,18 @@ export const colors = {
 export const spacer = '&nbsp;&nbsp;&nbsp;&nbsp;';
 export const arrow = '&rtrif;&nbsp;&nbsp;'
 
+export const codes = {};
+outputClassifications.forEach(c => {
+	const classification = allClassifications[c.code];
+	if (c.categories == null) {
+		codes[classification.id] = classification.categories
+			.filter(d => d.id != '-8')
+			.map(d => ({label: d.label, cells: [d.id]}));
+	} else {
+		codes[classification.id] = c.categories;
+	}
+});
+
 export let newDatasets = [
   {
 		key: 'residents',
@@ -47,11 +59,10 @@ export let newDatasets = [
 ];
 
 outputClassifications.forEach(c => {
-    c = allClassifications[c];
+	const classification = allClassifications[c.code];
     newDatasets[0].tables.push({
-        key: c.label,
-        code: c.id,
-        categories: new Map(c.categories.filter(d => d.id != '-8').map(d => [d.id, d.label]))
+        key: classification.label,
+        code: classification.id
     });
 });
 
@@ -312,15 +323,6 @@ export const vars = [];
 */
 
 console.log({newVars, vars});
-
-export const codes = {};
-
-outputClassifications.forEach(c => {
-	c = allClassifications[c];
-	codes[c.id] = c.categories
-		.filter(d => d.id != '-8')
-		.map(d => ({label: d.label, cells: [d.id]}));
-});
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
 export const ladBounds = {
