@@ -317,7 +317,9 @@ export const codes = {};
 
 outputClassifications.forEach(c => {
 	c = allClassifications[c];
-	codes[c.id] = c.categories.filter(d => d.id != '-8').map(d => ({label: d.label, cells: [d.id]}));
+	codes[c.id] = c.categories
+		.filter(d => d.id != '-8')
+		.map(d => ({label: d.label, cells: [d.id]}));
 });
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
