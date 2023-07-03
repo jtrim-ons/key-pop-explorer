@@ -38,25 +38,42 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
   if (sel.length == 0 || sel[0].newFormat) {
     console.log("NEW FORMAT!")
     let selString = getSelString(sel);
-    let url = `${newEndpoint}${sel.length}var/${selString}.json`
-    console.log({url});
-    let response = await fetch(url);
-    let json = await response.json();
-    if (sel.length > 0)
-      json = json[sel[sel.length - 1].code];
-    json.newFormat = true;
-    let retval = {data: {}};
-    for (let dataset of datasets) {
-      retval.data[dataset.key] = {};
-      for (let table of dataset.tables) {
-        retval.data[dataset.key][table.code] = {values: json[table.code]};
+    let retval = {OLD_DATA: {}, data: {}};
+    {
+      let url = `${newEndpoint}${sel.length}var/${selString}.json`
+      let response = await fetch(url);
+      let json = await response.json();
+      if (sel.length > 0)
+        json = json[sel[sel.length - 1].code];
+      json.newFormat = true;
+      
+      for (let dataset of datasets) {
+        retval.OLD_DATA[dataset.key] = {};
+        for (let table of dataset.tables) {
+          retval.OLD_DATA[dataset.key][table.code] = {values: json[table.code]};
+        }
       }
     }
-    console.log({json, retval});
+    {
+      let url = `${newEndpoint}${sel.length}var_percent/${selString}.json`
+      let response = await fetch(url);
+      let json = await response.json();
+      if (sel.length > 0)
+        json = json[sel[sel.length - 1].code];
+      json.newFormat = true;
+      
+      for (let dataset of datasets) {
+        retval.data[dataset.key] = {};
+        for (let table of dataset.tables) {
+          retval.data[dataset.key][table.code] = {values: json[table.code]};
+        }
+      }
+      console.log({json, retval});
+    }
     return retval;
   }
 
-  console.log("OLD FORMAT!")
+  throw "OLD FORMAT!";
 
   let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
 
@@ -228,11 +245,13 @@ export function makeSum(values) {
   if (!values) return 0;
 
   let sum = 0;
-  for (let key in values) {
-    if (key != '-8') {
-      sum += values[key];
-    }
-  }
+  for (let i=0; i<values.length; i++)
+    sum += values[i];
+  // for (let key in values) {
+  //   if (key != '-8') {
+  //     sum += values[key];
+  //   }
+  // }
   return sum;
 }
 

@@ -12,7 +12,7 @@
     geojson.features.forEach(d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]);
 
     let json = await getData(newDatasets, [], fetch);
-    let sumAll = makeSum(json.data.residents.health_in_general.values);  // WAS: makeSum(json.data.residents.health.values)
+    let sumAll = makeSum(json.data.residents.sex.values.count);  // WAS: makeSum(json.data.residents.health.values)
 		let dataAll = json.data;
 
     let geoAll = await getGeo([], fetch);
@@ -119,7 +119,7 @@
 		getData(newDatasets, selected)
 		.then(json => {
 			if (json.data.residents.sex.values) {  // 	WAS: if (json.data.residents.age.values) {
-				sum.selected = makeSum(json.data.residents.health_in_general.values);  // WAS: sum.selected = makeSum(json.data.residents.health.values);
+				sum.selected = makeSum(json.data.residents.sex.values.count);  // WAS: sum.selected = makeSum(json.data.residents.health.values);
 				data.selected = json.data;
 
 				getGeo(selected)
@@ -174,30 +174,13 @@
 		let valsSelected = data.selected[group][dataset].values;
 
 		let arr = [];
-		let sumAll = 0;
-		let sumSelected = 0;
 
-		codes[dataset].forEach(cd => {
+		codes[dataset].forEach((cd, i) => {
 			let label = cd.label;
-			let valAll = 0;
-			let valSelected = 0;
-			cd.cells.forEach(i => {
-				valAll += valsAll[i];
-				sumAll += valsAll[i];
-
-				valSelected += valsSelected[i];
-				sumSelected += valsSelected[i];
-			});
-			if (sum.selected != sum.all) arr.push({group: "This group", category: label, count: valSelected});
-			arr.push({group: "Whole population", category: label, count: valAll});
-		});
-
-		arr.forEach((d, i) => {
-			if (sum.selected != sum.all && i % 2 == 0) {
-				d.value = (d.count / sumSelected) * 100;
-			} else {
-				d.value = (d.count / sumAll) * 100;
-			}
+			let valAll = valsAll.percent[i];
+			let valSelected = valsSelected.percent[i];
+			if (sum.selected != sum.all) arr.push({group: "This group", category: label, value: valSelected});
+			arr.push({group: "Whole population", category: label, value: valAll});
 		});
 
 		return arr;
@@ -336,11 +319,11 @@
 			{/if}
 		</Tile> -->
 		<Tile title="Age profile">
-			{#if isNA(data.selected.residents.resident_age_18b.values)}
+			{#if isNA(data.selected.residents.resident_age_23a.values.percent)}
       <span class="num-desc">{texts.nodata}</span>
       {:else}
 			<ProfileChart
-					data="{data.selected && makeDataNew(['residents', 'resident_age_18b'])}"
+					data="{data.selected && makeDataNew(['residents', 'resident_age_23a'])}"
 					zKey="group"
 					/>
 			{/if}
