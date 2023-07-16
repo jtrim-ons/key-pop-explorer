@@ -68,6 +68,10 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
           retval.data[dataset.key][table.code] = {values: json[table.code]};
         }
       }
+
+      if (sel.length > 0) {
+        retval.total_pop = json.total_pop;
+      }
       console.log({json, retval});
     }
     return retval;
