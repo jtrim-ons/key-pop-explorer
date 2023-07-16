@@ -11,14 +11,12 @@
     let geoLookup = {};
     geojson.features.forEach(d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]);
 
-    let json = await getData(newDatasets, [], fetch);
-    let sumAll = makeSum(json.data.residents.sex.values.count);  // WAS: makeSum(json.data.residents.health.values)
-		let dataAll = json.data;
+		let dataAll = (await getData(newDatasets, [], fetch)).data;
+		dataAll.total_pop = makeSum(dataAll.residents.sex.values.count);
 
-    let geoAll = await getGeo([], fetch);
     let geoPerc = [];
 
-		let geoCodes = Object.keys(geoAll);
+		let geoCodes = geojson.features.map(d => d.properties[ladBounds.code]);
 
     geoCodes.forEach(code => {
       geoPerc.push({code: code, name: geoLookup[code], value: 100});
@@ -26,7 +24,7 @@
     geoPerc.forEach(d => d.color = colors.seq[4]);
     
     return {
-			props: { geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc }
+			props: { geojson, geoLookup, dataAll, geoCodes, geoPerc }
 		}
 	}
 </script>
@@ -53,7 +51,7 @@
 	import Tile from "$lib/layout/partial/Tile.svelte";
 	import Em from "$lib/ui/Em.svelte";
 
-  export let geojson, geoLookup, sumAll, dataAll, geoAll, geoCodes, geoPerc;
+  export let geojson, geoLookup, dataAll, geoCodes, geoPerc;
 
 	let vars = vars_.concat(newVars);
 
@@ -87,14 +85,9 @@
 		geojson,
 		geoLookup,
 		geoCodes,
-		geoAll,
 		geoPerc,
 		geoBreaks: [0, 100]
 	};
-	let sum = {
-		all: sumAll,
-		selected: sumAll
-	}
 	
 	function doSelect(topic) {
 		selected = [...selected, {topic: active.label, key: active.key, ...active_cats[topic]}];
@@ -119,8 +112,10 @@
 		getData(newDatasets, selected)
 		.then(json => {
 			if (json.data.residents.sex.values) {  // 	WAS: if (json.data.residents.age.values) {
-				sum.selected = makeSum(json.data.residents.sex.values.count);  // WAS: sum.selected = makeSum(json.data.residents.health.values);
 				data.selected = json.data;
+				data.selected.total_pop = selected.length === 0 ?
+						makeSum(dataAll.residents.sex.values.count) :
+						json.total_pop;
 
 				getGeo(selected)
 				.then(geoData => {
@@ -129,7 +124,7 @@
 
 					if (true) {
 						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: geoData[code] != null ? (geoData[code] / data.geoAll[code]) * 100 : null});
+							array.push({code: code, name: data.geoLookup[code], value: geoData[code] != null ? geoData[code][1] : null});
 						});
 
 						let vals = array.map(d => d.value).filter(d => d != null);
@@ -179,7 +174,7 @@
 			let label = cd.label;
 			let valAll = valsAll.percent[i];
 			let valSelected = valsSelected.percent[i];
-			if (sum.selected != sum.all) arr.push({group: "This group", category: label, value: valSelected});
+			if (data.selected.total_pop != data.all.total_pop) arr.push({group: "This group", category: label, value: valSelected});
 			arr.push({group: "Whole population", category: label, value: valAll});
 		});
 
@@ -199,19 +194,6 @@
 	// 	return result;
 	// }
 
-
-	function getMedianAge(dataset) {
-		let values = dataset.residents.age.values;
-		let sum = makeSum(values);
-
-		let i = 0;
-		let count = 0;
-		while (count < sum / 2) {
-			count += values[i];
-			i += 1;
-		}
-		return i - 1;
-	}
 
 	function refreshData() {
 		selected = []
@@ -299,25 +281,14 @@
 <Content>
 	<Tiles title="Demographics">
 		<Tile title="Population">
-			{#if sum.selected == 0}
+			{#if data.selected.total_pop == 0}
 			<div class="num-desc">{texts.nodata}</div>
 			{:else}
-			<div class="num-big">{Math.round((sum.selected / sum.all) * 100) > 0 ? Math.round((sum.selected / sum.all) * 100) : '<1'}%</div>
-			<div class="num-suffix">of people in England and Wales</div>
-			<div class="num-desc"><Em color="lightgrey">{sum.selected.toLocaleString()}</Em> of {sum.all.toLocaleString()} people</div>
+			<div class="num-big">{Math.round((data.selected.total_pop / data.all.total_pop) * 100) > 0 ? Math.round((data.selected.total_pop / data.all.total_pop) * 100) : '<1'}%</div>
+			<div class="num-suffix">of people in England and Wales (TODO: calculate this percentage in Python)</div>
+			<div class="num-desc"><Em color="lightgrey">{data.selected.total_pop.toLocaleString()}</Em> of {data.all.total_pop.toLocaleString()} people</div>
 			{/if}
 		</Tile>
-		<!-- <Tile title="Average (median) age">
-			{#if isNA(data.selected.residents.age.values)}
-			<div class="num-desc">{texts.nodata}</div>
-			{:else}
-			<div class="num-big">{getMedianAge(data.selected)}</div>
-			<div class="num-suffix">years</div>
-			{#if sum.all != sum.selected}
-      <div class="num-desc"><Em color="lightgrey">{getMedianAge(data.all)} years</Em> for whole population</div>
-      {/if}
-			{/if}
-		</Tile> -->
 		<Tile title="Age profile">
 			{#if isNA(data.selected.residents.resident_age_23a.values.percent)}
       <span class="num-desc">{texts.nodata}</span>

@@ -160,7 +160,7 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
 
 export async function getGeo(sel = [], fetch = window.fetch) {
   let selString = getSelString(sel);
-  let url = `${newEndpoint}${sel.length}var-by-ltla/${selString}_by_geog.json`
+  let url = `${newEndpoint}${sel.length}var-by-ltla_percent/${selString}_by_geog.json`
   console.log({url});
   let response = await fetch(url);
   let json = await response.json();
