@@ -385,8 +385,11 @@
 		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
 			<Tile title="{removeCategoryCountFromName(table.key)}">
 				<!-- FIXME: check for missing data -->
-				{#if !(table.code in data.selected.residents) || data.selected.residents[table.code].values == null}
+				{#if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
 					<span class="num-desc">{texts.nodata}</span>
+					{#if data.selected.residents[table.code].values == null}
+						<span class="num-desc">TODO: find out why data.selected.residents[table.code].values can be undefined.</span>
+					{/if}
 				{:else}
 				<svelte:component this={chart_type} data="{
 							data.selected && makeDataNew(['residents', table.code])
