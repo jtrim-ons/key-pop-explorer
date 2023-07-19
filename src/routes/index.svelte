@@ -41,7 +41,6 @@
 	import BreaksChart from "$lib/chart/BreaksChart.svelte";
 	import BarChart from "$lib/chart/BarChart.svelte";
 	import GroupChart from "$lib/chart/GroupChart.svelte";
-	import StackChart from "$lib/chart/StackChart.svelte";
 	import Table from "$lib/chart/Table.svelte";
 	import Map from "$lib/map/Map.svelte";
 	import MapSource from "$lib/map/MapSource.svelte";
@@ -380,7 +379,6 @@
 			<strong>Chart type:</strong>
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
 			<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
-			<label><input type=radio bind:group={chart_type} name="chart-type" value={StackChart}>Stacked bar</label>
 		</span>
 		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
 			<Tile title="{removeCategoryCountFromName(table.key)}">
