@@ -7,7 +7,7 @@
   <tbody>
     {#each data as d, i}
     <tr>
-      <td class="w35">{i + offset}.</td>
+      <!-- <td class="w35">{i + offset}.</td> -->
       <td><strong>{d.name}</strong></td>
       <td class="text-right">{d.value.toFixed(1)}%</td>
     </tr>
