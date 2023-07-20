@@ -358,14 +358,14 @@
 			</div>
 			{/if}
 		</Tile>
-		<Tile title="Areas with highest %">
+		<Tile title="Areas with high %">
 			{#if data.geoPerc && selected[0]}
 			<Table data={[...data.geoPerc].sort((a, b) => b.value - a.value).slice(0, 5)}/>
 			{:else}
 			<span class="muted">Make a selection to see rankings.</span>
 			{/if}
 		</Tile>
-		<Tile title="Areas with lowest %">
+		<Tile title="Areas with low %">
 			{#if data.geoPerc && selected[0]}
 			<Table data={data.geoPerc.filter(d => d.value != null).sort((a, b) => b.value - a.value).slice(-5)} offset={data.geoPerc.filter(d => d.value != null).length - 4}/>
 			{:else}
