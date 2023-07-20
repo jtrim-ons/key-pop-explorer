@@ -5,7 +5,7 @@
 	export let height = 15;
 	export let breaks = [0,20,40,60,80,100];
 	export let colors = ['rgba(234,236,177,.8)', 'rgba(169,216,145,.8)', 'rgba(0,167,186,.8)', 'rgba(0,78,166,.8)', 'rgba(0,13,84,.8)'];
-  export let formatTick = d => d.toFixed(0);
+  export let formatTick = d => d.toFixed(1);
   export let formatVal = d => d.toFixed(1);
   export let suffix = "%";
 	
