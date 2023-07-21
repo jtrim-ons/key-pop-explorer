@@ -180,20 +180,6 @@
 		return arr;
 	}
 
-	// function makeDataNewNew(props) {
-	// 	let group = props[0];
-	// 	let dataset = props[1];
-	// 	let valsSelected = data.selected[group][dataset].values;
-	// 	let valsAll = data.all[group][dataset].values;
-	// 	let result = [];
-	// 	for (let code of codes[dataset]) {
-	// 		result.push({group: "This group", category: code.label + " (" + code.cells + ")", value: valsSelected[code.cells[0]] / makeSum(valsSelected) * 100});
-	// 		result.push({group: "Whole population", category: code.label + " (" + code.cells + ")", value: valsAll[code.cells[0]] / makeSum(valsAll) * 100});
-	// 	}
-	// 	return result;
-	// }
-
-
 	function refreshData() {
 		selected = []
     for (let pair of $page.url.searchParams.entries()) {
@@ -283,14 +269,21 @@
 			{#if data.selected.total_pop == 0}
 			<div class="num-desc">{texts.nodata}</div>
 			{:else}
-			<div class="num-big">{Math.round((data.selected.total_pop / data.all.total_pop) * 100) > 0 ? Math.round((data.selected.total_pop / data.all.total_pop) * 100) : '<1'}%</div>
-			<div class="num-suffix">of people in England and Wales (TODO: calculate this percentage in Python)</div>
-			<div class="num-desc"><Em color="lightgrey">{data.selected.total_pop.toLocaleString()}</Em> of {data.all.total_pop.toLocaleString()} people</div>
+			<div class="num-big">{data.selected.total_pop.toLocaleString()}</div>
+			<div class="num-suffix">people (TODO: calculate this percentage in Python)</div>
+			<div class="num-desc"><Em color="lightgrey"></Em>{
+				data.selected.total_pop === data.all.total_pop ? 100 :
+					((data.selected.total_pop / data.all.total_pop) * 100).toFixed(1) !== '0.0' ?
+					((data.selected.total_pop / data.all.total_pop) * 100).toFixed(1) :
+					'Less than 0.05'
+				}% of the total population of England and Wales</div>
 			{/if}
 		</Tile>
 		<Tile title="Age profile">
-			{#if isNA(data.selected.residents.resident_age_23a.values.percent)}
-      <span class="num-desc">{texts.nodata}</span>
+			{#if data.selected.residents.resident_age_23a.values === "blocked"}
+      	<span class="num-desc">{texts.nodata}</span>
+			{:else if isNA(data.selected.residents.resident_age_23a.values.percent)}
+      	<span class="num-desc">{texts.nodata}</span>
       {:else}
 			<ProfileChart
 					data="{data.selected && makeDataNew(['residents', 'resident_age_23a'])}"
@@ -383,68 +376,21 @@
 		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
 			<Tile title="{removeCategoryCountFromName(table.key)}">
 				<!-- FIXME: check for missing data -->
-				{#if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
+				{#if data.selected.residents[table.code].values === "blocked"}
+					<span class="num-desc">{texts.blocked}</span>
+				{:else if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
 					<span class="num-desc">{texts.nodata}</span>
 					{#if data.selected.residents[table.code].values == null}
 						<span class="num-desc">TODO: find out why data.selected.residents[table.code].values can be undefined.</span>
 					{/if}
 				{:else}
-				<svelte:component this={chart_type} data="{
+					<svelte:component this={chart_type} data="{
 							data.selected && makeDataNew(['residents', table.code])
 						}"/>
 				{/if}
 				<span class="num-desc">Percentage of {populationBases[table.code]}</span>
 			</Tile>
 		{/each}
-		<!-- <Tile title="Marital status">
-			{#if isNA(data.selected.residents.marital.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'marital'])}"/>
-			{/if}
-		</Tile> -->
-		<!-- <Tile title="Social grade">
-			{#if isNA(data.selected.residents.grade.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'grade'])}"/>
-			{/if}
-		</Tile> -->
-		<!-- <Tile title="Economic activity">
-			{#if isNA(data.selected.residents.economic.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'economic'])}"/>
-			{/if}
-		</Tile>
-		<Tile title="Distance to work (km)">
-			{#if isNA(data.selected.residents.distance.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'distance'])}"/>
-			{/if}
-		</Tile>
-		<Tile title="Mode of travel to work">
-			{#if isNA(data.selected.residents.travel.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['residents', 'travel'])}"/>
-			{/if}
-		</Tile>
-		<Tile title="Type of housing">
-			{#if isNA(data.selected.households.housing.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['households', 'housing'])}"/>
-			{/if}
-		</Tile>
-		<Tile title="Tenure of housing">
-			{#if isNA(data.selected.households.tenure.values)}
-      <span class="num-desc">{texts.nodata}</span>
-      {:else}
-			<svelte:component this={chart_type} data="{data.selected && makeDataNew(['households', 'tenure'])}"/>
-			{/if}
-		</Tile> -->
 	</Tiles>
 </Content>
 
