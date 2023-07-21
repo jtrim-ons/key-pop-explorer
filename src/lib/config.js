@@ -1,6 +1,7 @@
 import allClassifications from './all-classifications.json';
 import inputClassifications from './input-classifications.json';
 import outputClassifications from './output-classifications-with-details';
+import outputClassificationsCategorised from './output-classifications-categorised';
 import populationBases_ from "$lib/population-bases.json";
 
 export const populationBases = populationBases_;
@@ -55,7 +56,8 @@ export let newDatasets = [
   {
 		key: 'residents',
 		code: 'Usual-Residents',
-		tables: []
+		tables: [],
+		tablesCategorised: []
 	}
 ];
 
@@ -65,6 +67,21 @@ outputClassifications.forEach(c => {
         key: classification.label,
         code: classification.id
     });
+});
+
+outputClassificationsCategorised.forEach(category => {
+	newDatasets[0].tablesCategorised.push({
+		categoryName: category.category_name,
+		tables: []
+	});
+	for (const code of category.classification_codes) {
+		const classification = allClassifications[code];
+			newDatasets[0].tablesCategorised[newDatasets[0].tablesCategorised.length - 1].tables.push({
+				key: classification.label,
+				code: classification.id
+		});
+
+	}
 });
 
 // The datasets used for charts

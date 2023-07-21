@@ -367,31 +367,33 @@
 		</Tile>
 	</Tiles>
 
-	<Tiles title="Key indicators">
-		<span slot="meta" style:margin-left="10px">
-			<strong>Chart type:</strong>
-			<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
-			<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
-		</span>
-		{#each newDatasets[0].tables.filter(t => !t.code.startsWith('resident_age')) as table}
-			<Tile title="{removeCategoryCountFromName(table.key)}">
-				<!-- FIXME: check for missing data -->
-				{#if data.selected.residents[table.code].values === "blocked"}
-					<span class="num-desc">{texts.blocked}</span>
-				{:else if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
-					<span class="num-desc">{texts.nodata}</span>
-					{#if data.selected.residents[table.code].values == null}
-						<span class="num-desc">TODO: find out why data.selected.residents[table.code].values can be undefined.</span>
+	{#each newDatasets[0].tablesCategorised as category}
+		<Tiles title="{category.categoryName}">
+			<span slot="meta" style:margin-left="10px">
+				<strong>Chart type:</strong>
+				<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
+				<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
+			</span>
+			{#each category.tables.filter(t => !t.code.startsWith('resident_age')) as table}
+				<Tile title="{removeCategoryCountFromName(table.key)}">
+					<!-- FIXME: check for missing data -->
+					{#if data.selected.residents[table.code].values === "blocked"}
+						<span class="num-desc">{texts.blocked}</span>
+					{:else if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
+						<span class="num-desc">{texts.nodata}</span>
+						{#if data.selected.residents[table.code].values == null}
+							<span class="num-desc">TODO: find out why data.selected.residents[table.code].values can be undefined.</span>
+						{/if}
+					{:else}
+						<svelte:component this={chart_type} data="{
+								data.selected && makeDataNew(['residents', table.code])
+							}"/>
 					{/if}
-				{:else}
-					<svelte:component this={chart_type} data="{
-							data.selected && makeDataNew(['residents', table.code])
-						}"/>
-				{/if}
-				<span class="num-desc">Percentage of {populationBases[table.code]}</span>
-			</Tile>
-		{/each}
-	</Tiles>
+					<span class="num-desc">Percentage of {populationBases[table.code]}</span>
+				</Tile>
+			{/each}
+		</Tiles>
+	{/each}
 </Content>
 
 <style>
