@@ -120,7 +120,7 @@ inputClassifications.forEach(c => {
     newVars.push({
         label: c.label,
         key: c.id,
-        cats: c.categories.map(d => ({
+        cats: c.categories.filter(d => d.id !== '-8').map(d => ({
             var: c.id,
             code: d.id,
             label: d.label,
