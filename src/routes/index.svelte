@@ -384,9 +384,10 @@
 			</span>
 			{#each category.tables.filter(
 				t => !t.code.startsWith('resident_age') &&
-				// The following condition will occur when the output variable is the same
-				// as an input variable, so the data has not been requested from the API 
-				data.selected.residents[t.code].values !== undefined
+					data.selected.residents[t.code].values !== "blocked" &&
+					// The following condition will occur when the output variable is the same
+					// as an input variable, so the data has not been requested from the API 
+					data.selected.residents[t.code].values !== undefined
 			) as table}
 				<Tile title="{removeCategoryCountFromName(table.key)}">
 					<!-- FIXME: check for missing data -->
