@@ -374,16 +374,18 @@
 				<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
 				<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
 			</span>
-			{#each category.tables.filter(t => !t.code.startsWith('resident_age')) as table}
+			{#each category.tables.filter(
+				t => !t.code.startsWith('resident_age') &&
+				// The following condition will occur when the output variable is the same
+				// as an input variable, so the data has not been requested from the API 
+				data.selected.residents[t.code].values !== undefined
+			) as table}
 				<Tile title="{removeCategoryCountFromName(table.key)}">
 					<!-- FIXME: check for missing data -->
 					{#if data.selected.residents[table.code].values === "blocked"}
 						<span class="num-desc">{texts.blocked}</span>
-					{:else if data.selected.residents[table.code].values == null || data.selected.residents[table.code].values.percent[0] == null}
+					{:else if data.selected.residents[table.code].values.percent[0] == null}
 						<span class="num-desc">{texts.nodata}</span>
-						{#if data.selected.residents[table.code].values == null}
-							<span class="num-desc">TODO: find out why data.selected.residents[table.code].values can be undefined.</span>
-						{/if}
 					{:else}
 						<svelte:component this={chart_type} data="{
 								data.selected && makeDataNew(['residents', table.code])
