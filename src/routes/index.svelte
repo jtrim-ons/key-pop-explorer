@@ -488,7 +488,7 @@
 	.num-desc {
 		display: block;
 		margin-top: 10px;
-		color: #666;
+		color: #707070;
 	}
 
 	.chip {
