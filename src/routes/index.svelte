@@ -302,6 +302,9 @@
 	</Tiles>
 
 	<Tiles title="Population by area">
+		<Tile colspan={3} rowspan={1} blank>
+			<p class="subtitle">For each lower-tier local authority area in England and Wales, the map shows the count of people in the categories chosen above as a percentage of the area's total population.</p>
+		</Tile>
 		<Tile colspan={2} rowspan={2} blank>
 			<div style:height="450px">
 			<Map bind:map style={mapStyle}>
