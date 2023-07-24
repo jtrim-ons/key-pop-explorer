@@ -29,7 +29,10 @@ function getSelString(sel) {
         else
           return `${s.key}`;
       }).join('/');
-  return selString;
+  return {
+    selString,
+    lastCode: sel.length > 0 ? selected[selected.length-1].code : null
+  };
 }
 
 export async function getData(datasets, sel = [], fetch = window.fetch) {
@@ -37,30 +40,19 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
 
   if (sel.length == 0 || sel[0].newFormat) {
     console.log("NEW FORMAT!")
-    let selString = getSelString(sel);
-    let retval = {OLD_DATA: {}, data: {}};
-    {
-      let url = `${newEndpoint}${sel.length}var/${selString}.json`
-      let response = await fetch(url);
-      let json = await response.json();
-      if (sel.length > 0)
-        json = json[sel[sel.length - 1].code];
-      json.newFormat = true;
-      
-      for (let dataset of datasets) {
-        retval.OLD_DATA[dataset.key] = {};
-        for (let table of dataset.tables) {
-          retval.OLD_DATA[dataset.key][table.code] = {values: json[table.code]};
-        }
-      }
-    }
+    let {selString, lastCode} = getSelString(sel);
+    console.log(selString)
+    let retval = {data: {}};
     {
       let url = `${newEndpoint}${sel.length}var_percent/${selString}.json`
       let response = await fetch(url);
       let json = await response.json();
+      console.log(url)
       if (sel.length > 0)
-        json = json[sel[sel.length - 1].code];
+        json = json[lastCode];
       json.newFormat = true;
+
+      console.log({tmpjson: json})
       
       for (let dataset of datasets) {
         retval.data[dataset.key] = {};
@@ -159,13 +151,13 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
 }
 
 export async function getGeo(sel = [], fetch = window.fetch) {
-  let selString = getSelString(sel);
+  let {selString, lastCode} = getSelString(sel);
   let url = `${newEndpoint}${sel.length}var-by-ltla_percent/${selString}_by_geog.json`
   console.log({url});
   let response = await fetch(url);
   let json = await response.json();
   if (sel.length > 0)
-    json = json[sel[sel.length - 1].code];
+    json = json[lastCode];
   return json;
 
   // let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
