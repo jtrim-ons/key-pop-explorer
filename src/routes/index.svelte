@@ -391,7 +391,7 @@
 								data.selected && makeDataNew(['residents', table.code])
 							}"/>
 					{/if}
-					<span class="num-desc">Percentage of {populationBases[table.code]}</span>
+					<span class="num-desc">% of {populationBases[table.code]}</span>
 				</Tile>
 			{/each}
 		</Tiles>
