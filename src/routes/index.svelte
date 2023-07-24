@@ -220,7 +220,7 @@
 	background="none"
 	breadcrumb="{[{label: 'Census', url: '/census'}, {label: 'Population Group Profiles'}]}">
 	<Headline>Population Group Profiles</Headline>
-	<p class="subtitle">Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion=7&cob=1-5">people of Sikh ethnicity born in the UK</a> or <a href="?age=65-90&cob=6">people aged 65+ born in Ireland</a>.</p>
+	<p class="subtitle">Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion_tb=7&country_of_birth_3a=1">Sikhs born in the UK</a> or <a href="?resident_age_3a=3&country_of_birth_8a=2">people aged 65+ born in Ireland</a>.</p>
 	<div slot="meta" class="wrapper">
 	<select bind:value={active} disabled={!ops}>
     <option value={null}>{selected.length ? 'Select another characteristic' : 'Select a characteristic'}</option>
