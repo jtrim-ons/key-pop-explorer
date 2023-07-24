@@ -110,7 +110,7 @@
 	function loadData() {
 		status = 'loading';
 
-		if (selected && selected.map(d => d.code).includes('0-15')) {
+		if (selected && selected.map(d => d.label).includes('Aged 15 years and under')) {
 			u16 = true;
 		} else {
 			u16 = false;
