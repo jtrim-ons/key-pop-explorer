@@ -34,7 +34,8 @@
   import { setContext } from "svelte";
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
-	import { themes, vars as vars_, newVars, codes, mapStyle, texts, arrow, spacer } from "$lib/config";
+	import { themes, vars as vars_, newVars, codes, mapStyle, texts, arrow, spacer,
+					 unblockedCombinationCounts } from "$lib/config";
 	import Titleblock from "$lib/layout/Titleblock.svelte";
 	import Headline from "$lib/layout/partial/Headline.svelte";
 	import ProfileChart from "$lib/chart/ProfileChart.svelte";
@@ -76,6 +77,13 @@
 	let chart_type = BarChart;
 
 	$: ops = vars.filter(d => !selected.map(d => d.topic).includes(d.label));
+
+	const getUnblockedCount = op =>
+			unblockedCombinationCounts[
+				[
+					...selected.map(d => d.key), op.key
+				].sort((a, b) => a.localeCompare(b)).join(',')
+			];
 
 	// Data
 	let data = {
@@ -214,10 +222,10 @@
 	<Headline>Population Group Profiles</Headline>
 	<p class="subtitle">Select one or more identity characteristics to define a population group to compare with the whole population of England and Wales. For example, see <a href="?religion=7&cob=1-5">people of Sikh ethnicity born in the UK</a> or <a href="?age=65-90&cob=6">people aged 65+ born in Ireland</a>.</p>
 	<div slot="meta" class="wrapper">
-	<select bind:value={active} disabled={!ops[0]}>
-    <option value={null}>{!ops[0] ? 'No more topics available' : selected[0] ? 'Select another characteristic' : 'Select a characteristic'}</option>
+	<select bind:value={active} disabled={!ops}>
+    <option value={null}>{selected.length ? 'Select another characteristic' : 'Select a characteristic'}</option>
     {#each ops as op, i}
-    <option value={op}>{capitalise(op.label)}</option>
+    <option value={op}>{capitalise(op.label)} [{getUnblockedCount(op)} charts]</option>
     {/each}
   </select>
 
