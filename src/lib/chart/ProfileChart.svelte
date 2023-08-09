@@ -9,6 +9,7 @@
 	export let height = 100;
 	export let markerWidth = 2.5;
 	export let minmax = ["0 years", "85+"];
+	export let maskRange = [3.5, 5.5];
   export let base = null;
   export let base_ext = ", 5 year age bands";
 	
@@ -32,7 +33,27 @@
 		console.log(data_stacked)
 		return data_stacked;
 	}
-	
+
+	function maskPos(x) {
+		if (x % 1 === 0) {
+			return `calc(${x / xDomain.length * 100}%) + 1px`
+		} else {
+			return `calc(${Math.floor(x) / xDomain.length * 100}% +` +
+					`(${1 / xDomain.length * 100}% - 2px) * ${x % 1})`;
+		}
+	}
+	function maskHeight(data_stacked) {
+		return Math.max(
+			data_stacked.map(
+				stack => Math.max(
+					stack.values.map(
+						d => yScale(d[yKey])
+					)
+				)
+			)
+		);
+	}
+
 	$: xDomain = data.map(d => d[xKey]).filter((v, i, a) => a.indexOf(v) === i);
 	$: yDomain = [0, Math.max(...data.map(d => d[yKey]))];
 	$: zDomain = data.map(d => d[zKey]).filter((v, i, a) => a.indexOf(v) === i);
@@ -65,8 +86,8 @@
 			class="bar"
 			style:bottom="0"
 			style:height="{yScale(d[yKey])}%"
-			style:left="calc({(j / xDomain.length) * 100}%)"
-			style:right="calc({(1 - ((j + 1) / xDomain.length)) * 100}% + 2px)"
+			style:left="calc({j / xDomain.length * 100}%)"
+			style:width="calc({1 / xDomain.length * 100}% - 2px)"
 			/>
 	{/each}
 	
@@ -76,6 +97,21 @@
 	{/each}
 	{/if}
 	{/each}
+	<div
+	class="mask"
+		style:bottom="0"
+		style:height="{maskHeight(data_stacked)}%"
+		style:left="0"
+		style:width="{maskPos(maskRange[0])}"
+	/>
+	<div
+	class="mask"
+		style:bottom="0"
+		style:height="{maskHeight(data_stacked)}%"
+		style:left="{maskPos(maskRange[1])}"
+		style:right="2px"
+	/>
+
 </div>
 
 <div class="x-scale" style:height="1rem">
@@ -120,6 +156,10 @@
 	}
 	.bar {
 		background-color: #27A0CC;
+	}
+	.mask {
+		background-color: purple;
+		opacity: .3;
 	}
 	.marker {
 		border-bottom: 2.5px solid black;
