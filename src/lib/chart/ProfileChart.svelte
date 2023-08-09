@@ -9,7 +9,7 @@
 	export let height = 100;
 	export let markerWidth = 2.5;
 	export let minmax = ["0 years", "85+"];
-	export let maskRange = [3.5, 5.5];
+	export let maskRange = null;
   export let base = null;
   export let base_ext = ", 5 year age bands";
 	
@@ -36,7 +36,7 @@
 
 	function maskPos(x) {
 		if (x % 1 === 0) {
-			return `calc(${x / xDomain.length * 100}%) + 1px`
+			return `calc(${x / xDomain.length * 100}% - 1px)`
 		} else {
 			return `calc(${Math.floor(x) / xDomain.length * 100}% +` +
 					`(${1 / xDomain.length * 100}% - 2px) * ${x % 1})`;
@@ -44,9 +44,9 @@
 	}
 	function maskHeight(data_stacked) {
 		return Math.max(
-			data_stacked.map(
+			...data_stacked.map(
 				stack => Math.max(
-					stack.values.map(
+					...stack.values.map(
 						d => yScale(d[yKey])
 					)
 				)
@@ -97,21 +97,26 @@
 	{/each}
 	{/if}
 	{/each}
-	<div
-	class="mask"
-		style:bottom="0"
-		style:height="{maskHeight(data_stacked)}%"
-		style:left="0"
-		style:width="{maskPos(maskRange[0])}"
-	/>
-	<div
-	class="mask"
-		style:bottom="0"
-		style:height="{maskHeight(data_stacked)}%"
-		style:left="{maskPos(maskRange[1])}"
-		style:right="2px"
-	/>
-
+	{#if maskRange != null}
+		{#if maskRange[0] != 0}
+			<div
+			class="mask"
+				style:bottom="0"
+				style:height="{maskHeight(data_stacked)}%"
+				style:left="0"
+				style:width="{maskPos(maskRange[0])}"
+			/>
+		{/if}
+		{#if maskRange[1] != 18}
+			<div
+			class="mask"
+				style:bottom="0"
+				style:height="{maskHeight(data_stacked)}%"
+				style:left="{maskPos(maskRange[1])}"
+				style:right="2px"
+			/>
+			{/if}
+		{/if}
 </div>
 
 <div class="x-scale" style:height="1rem">
@@ -158,8 +163,9 @@
 		background-color: #27A0CC;
 	}
 	.mask {
-		background-color: purple;
+		background-color: yellow;
 		opacity: .3;
+		pointer-events: none;
 	}
 	.marker {
 		border-bottom: 2.5px solid black;

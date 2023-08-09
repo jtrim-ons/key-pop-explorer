@@ -351,3 +351,27 @@ export const ladBounds = {
 	code: "areacd",
 	name: "areanm"
 }
+
+export const maskRanges = {
+	"resident_age_3a": {
+		"1": [0, 3.2],
+		"2": [3.2, 13],
+		"3": [13, 18]
+	},
+	"resident_age_8d": {
+		"1": [0, 3.2],
+		"2": [3.2, 5],
+		"3": [5, 7],
+		"4": [7, 9],
+		"5": [9, 11],
+		"6": [11, 13],
+		"7": [13, 15],
+		"8": [15, 18]
+	},
+	"resident_age_18b": {
+	}
+};
+
+for (let i=0; i<18; i++) {
+	maskRanges.resident_age_18b["" + (i + 1)] = [i, i + 1];
+}

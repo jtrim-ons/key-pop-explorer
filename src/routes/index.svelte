@@ -35,7 +35,7 @@
 	import { ckmeans } from "simple-statistics";
 	import { getColor, capitalise, makeSum, isNA, suffixer, changeClass, changeStr } from "$lib/utils";
 	import { themes, vars as vars_, newVars, codes, mapStyle, texts, arrow, spacer,
-					 unblockedCombinationCounts } from "$lib/config";
+					 unblockedCombinationCounts, maskRanges } from "$lib/config";
 	import Titleblock from "$lib/layout/Titleblock.svelte";
 	import Headline from "$lib/layout/partial/Headline.svelte";
 	import ProfileChart from "$lib/chart/ProfileChart.svelte";
@@ -202,6 +202,14 @@
     loadData();
 	}
 
+	function computeMaskRange(selected) {
+		for (const s of selected)
+			if (s.var in maskRanges)
+				return maskRanges[s.var][s.code];
+
+		return null;
+	}
+
 	afterNavigate(refreshData); // Refresh data when user navigates
 </script>
 
@@ -296,6 +304,7 @@
 			<ProfileChart
 					data="{data.selected && makeDataNew(['residents', 'resident_age_23a'])}"
 					zKey="group"
+					maskRange="{computeMaskRange(selected)}"
 					/>
 			{/if}
 		</Tile>
