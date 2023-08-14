@@ -1,7 +1,7 @@
 <script context="module">
 	export const prerender = false;
 
-  import { getTopo, getData, getGeo, removeCategoryCountFromName } from "$lib/utils";
+  import { getTopo, getData, removeCategoryCountFromName } from "$lib/utils";
 	import { ladBounds, datasets, newDatasets, colors, populationBases } from "$lib/config";
 	import { base, assets } from "$app/paths";
 
@@ -124,45 +124,51 @@
 						makeSum(dataAll.residents.sex.values.count) :
 						json.total_pop;
 
-				getGeo(selected)
-				.then(geoData => {
-					let array = [];
-					let groups = null;
+				let geoData = json.mapData;
+				let array = [];
+				let groups = null;
 
-					if (true) {
+				if (true) {
+					// FIXME: check this against Ahmad's previous version,
+					//     and probably create 100% data in Python for no selections.
+					if (selected.length === 0) {
+						data.geoCodes.forEach(code => {
+							array.push({code: code, name: data.geoLookup[code], value: 100});
+						});
+					} else {
 						data.geoCodes.forEach(code => {
 							array.push({code: code, name: data.geoLookup[code], value: geoData[code] != null ? geoData[code][1] : null});
 						});
-
-						let vals = array.map(d => d.value).filter(d => d != null);
-						groups = vals[4] ? ckmeans(vals, 5) : null;
-					} else {
-						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: null});
-						});
 					}
 
-					if (groups == null) {
-						array.forEach(d => d.color = colors.nodata);
-						data.geoBreaks = [0, 100];
-					} else if (!groups[1]) {
-						array.forEach(d => d.color = colors.seq[4]);
-						data.geoBreaks = [0, 100];
-					} else {
-						let breaks = [];
-						groups.forEach(grp => breaks.push(grp[0]));
-						breaks.push(groups[groups.length - 1][groups[groups.length - 1].length - 1]);
-						if (breaks[breaks.length - 1] == breaks[breaks.length - 2]) {
-							breaks.pop();
-						}
-						array.forEach(d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata);
-						data.geoBreaks = breaks;
-					}
+					let vals = array.map(d => d.value).filter(d => d != null);
+					groups = vals[4] ? ckmeans(vals, 5) : null;
+				} else {
+					data.geoCodes.forEach(code => {
+						array.push({code: code, name: data.geoLookup[code], value: null});
+					});
+				}
 
-					data.geoPerc = array;
-					varcount = selected.length;
-					status = 'success';
-				});
+				if (groups == null) {
+					array.forEach(d => d.color = colors.nodata);
+					data.geoBreaks = [0, 100];
+				} else if (!groups[1]) {
+					array.forEach(d => d.color = colors.seq[4]);
+					data.geoBreaks = [0, 100];
+				} else {
+					let breaks = [];
+					groups.forEach(grp => breaks.push(grp[0]));
+					breaks.push(groups[groups.length - 1][groups[groups.length - 1].length - 1]);
+					if (breaks[breaks.length - 1] == breaks[breaks.length - 2]) {
+						breaks.pop();
+					}
+					array.forEach(d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata);
+					data.geoBreaks = breaks;
+				}
+
+				data.geoPerc = array;
+				varcount = selected.length;
+				status = 'success';
 			} else {
 				status = 'failed';
 			}

@@ -21,49 +21,37 @@ function getSelString(sel) {
 export async function getData(datasets, sel = [], fetch = window.fetch) {
   console.log({datasets, sel});
 
-  if (sel.length == 0 || sel[0].newFormat) {
-    console.log("NEW FORMAT!")
-    let {selString, lastCode} = getSelString(sel);
-    console.log(selString)
-    let retval = {data: {}};
-    {
-      let url = `${endpoint}${sel.length}var_percent/${selString}.json`
-      let response = await fetch(url);
-      let json = await response.json();
-      console.log(url)
-      if (sel.length > 0)
-        json = json[lastCode];
-      json.newFormat = true;
-
-      console.log({tmpjson: json})
-      
-      for (let dataset of datasets) {
-        retval.data[dataset.key] = {};
-        for (let table of dataset.tables) {
-          retval.data[dataset.key][table.code] = {values: json[table.code]};
-        }
-      }
-
-      if (sel.length > 0) {
-        retval.total_pop = json.total_pop;
-      }
-      console.log({json, retval});
-    }
-    return retval;
+  if (sel.length > 0 && !sel[0].newFormat) {
+    throw new Error("OLD FORMAT!");
   }
 
-  throw "OLD FORMAT!";
-}
-
-export async function getGeo(sel = [], fetch = window.fetch) {
   let {selString, lastCode} = getSelString(sel);
-  let url = `${endpoint}${sel.length}var-by-ltla_percent/${selString}_by_geog.json`
-  console.log({url});
-  let response = await fetch(url);
-  let json = await response.json();
-  if (sel.length > 0)
-    json = json[lastCode];
-  return json;
+  let retval = {data: {}};
+
+  let barChartData;
+  if (sel.length === 0) {
+    let url = `${endpoint}${sel.length}var_percent/${selString}.json`
+    let response = await fetch(url);
+    barChartData = await response.json();
+  } else {
+    let url = `${endpoint}${sel.length}var-combined_percent/${selString}.json`
+    let response = await fetch(url);
+    let json = await response.json();
+    barChartData = json.bar_chart_data[lastCode];
+    retval.mapData = json.map_data[lastCode];
+    retval.total_pop = barChartData.total_pop;
+  }
+
+  for (let dataset of datasets) {
+    retval.data[dataset.key] = {};
+    for (let table of dataset.tables) {
+      retval.data[dataset.key][table.code] = {values: barChartData[table.code]};
+    }
+  }
+
+  console.log({barChartData, retval});
+
+  return retval;
 }
 
 export function getColor(value, breaks, colors) {
