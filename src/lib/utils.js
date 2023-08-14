@@ -1,23 +1,6 @@
 import { feature } from 'topojson-client';
 
-const newEndpoint = "https://raw.githubusercontent.com/jtrim-ons/key-pop-api-downloader/main/generated/";
-
-const endpoint = 'https://ftb-api-ext.ons.sensiblecode.io/graphql';
-const frag = `
-fragment tableDimensions on Table {
-  dimensions {
-    categories {
-      code
-    }
-  }
-}
-`.replace(/\s+/g, " ");
-const credentials = "YWhtYWQuYmFyY2xheTplbG9wZS5wdWNrLmhhaWxzLmV4cGxvcmU=";
-const headers = new Headers({
-  "Accept": "application/json",
-  "Content-Type": "application/json",
-  "Authorization": "Basic " + credentials
-});
+const endpoint = "https://raw.githubusercontent.com/jtrim-ons/key-pop-api-downloader/main/generated/";
 
 function getSelString(sel) {
   let selected = [...sel].sort((a, b) => a.key.localeCompare(b.key));
@@ -44,7 +27,7 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
     console.log(selString)
     let retval = {data: {}};
     {
-      let url = `${newEndpoint}${sel.length}var_percent/${selString}.json`
+      let url = `${endpoint}${sel.length}var_percent/${selString}.json`
       let response = await fetch(url);
       let json = await response.json();
       console.log(url)
@@ -70,138 +53,17 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
   }
 
   throw "OLD FORMAT!";
-
-  let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
-
-  let variables = [];
-  let filters = [];
-  let altVariables = [];
-  let altFilters = [];
-
-  if (selected[0]) {
-    selected.forEach(item => {
-      if (item.var) {
-        variables.push(item.var);
-        filters.push(`{variable: "${item.var}", codes: ["${item.code}"]}`);
-        
-        if (item.topic != "age group") {
-          altVariables.push(item.var);
-          altFilters.push(`{variable: "${item.var}", codes: ["${item.code}"]}`);
-        }
-      }
-    });
-  }
-
-  variables = variables[0] ? '"' + variables.join('","') + '",' : '';
-  filters = filters[0] ? '[' + filters.join(',') + ']' : '[]';
-  altVariables = altVariables[0] ? '"' + altVariables.join('","') + '",' : '';
-  altFilters = altFilters[0] ? '[' + altFilters.join(',') + ']' : '[]';
-
-  let dats = [];
-  datasets.forEach(dat => {
-    let tabs = [];
-    dat.tables.forEach(tab => {
-      tabs.push(`
-      ${tab.key}: table(
-        variables: [${tab.key == "age" ? altVariables : variables}"${tab.code}"]
-        filters: ${tab.key == "age" ? altFilters : filters}
-      )
-      {
-        values
-      }
-      `);
-    });
-    let string = `
-    ${dat.key}: dataset(name:"${dat.code}") {
-      ${tabs.join('\n')}
-    }
-    `
-    dats.push(string);
-  });
-
-  const query = `
-  query {
-    ${dats.join('\n')}
-  }
-  `.replace(/\s+/g, " ");
-
-	const ops = {
-		body: JSON.stringify({
-			"query": query
-		}),
-		headers: headers,
-		method: "POST",
-		mode: "cors"
-	};
-	
-	let response = await fetch(endpoint, ops);
-  let json = await response.json();
-
-  // Hack for filtering single year age data
-  let ageSelection = selected.filter(d => d.topic == "age group");
-  if (ageSelection[0] && json.data.residents.age.values) {
-    let ages = [...json.data.residents.age.values];
-    let cells = ageSelection[0].code.split('-');
-    cells.forEach((d, i) => cells[i] = +d);
-    ages.forEach((d, i) => ages[i] = i >= cells[0] && i <= cells[1] ? d : 0);
-    json.data.residents.age.values = ages;
-  }
-
-  return json;
 }
 
 export async function getGeo(sel = [], fetch = window.fetch) {
   let {selString, lastCode} = getSelString(sel);
-  let url = `${newEndpoint}${sel.length}var-by-ltla_percent/${selString}_by_geog.json`
+  let url = `${endpoint}${sel.length}var-by-ltla_percent/${selString}_by_geog.json`
   console.log({url});
   let response = await fetch(url);
   let json = await response.json();
   if (sel.length > 0)
     json = json[lastCode];
   return json;
-
-  // let selected = sel[0] ? [...sel].sort((a, b) => a.topic.localeCompare(b.topic)) : [...sel];
-  // let variables = [];
-  // let filters = [];
-  // if (selected[0]) {
-  //   selected.forEach(item => {
-  //     if (item.var) {
-  //       variables.push(item.var);
-  //       filters.push(`{variable: "${item.var}", codes: ["${item.code}"]}`);
-  //     }
-  //   });
-  // }
-  // let vars = variables[0] ? '"' + variables.join('","') + '",' : '';
-  // filters = filters[0] ? '[' + filters.join(',') + ']' : '[]';
-
-  // const query = `
-  // query {
-  //   dataset(name:"Usual-Residents") {
-  //     table(
-  //       variables: ["LA"${vars}]
-  //       filters: ${filters}
-  //     )
-  //     {
-  //       ...tableDimensions
-  //       values
-  //     }
-  //   }
-  // }
-  // `.replace(/\s+/g, " ");
-
-	// const ops = {
-	// 	body: JSON.stringify({
-	// 		"query": query + frag
-	// 	}),
-	// 	headers: headers,
-	// 	method: "POST",
-	// 	mode: "cors"
-	// };
-	
-	// let response = await fetch(endpoint, ops);
-  // let json = await response.json();
-  // console.log({response, json})
-  // return json;
 }
 
 export function getColor(value, breaks, colors) {
