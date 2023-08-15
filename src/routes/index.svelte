@@ -393,13 +393,15 @@
 		</Tile>
 	</Tiles>
 
+	<!-- <span slot="meta" style:margin-left="10px"> -->
+	<span>
+		<strong>Chart type:</strong>
+		<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
+		<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
+	</span>
+
 	{#each newDatasets[0].tablesCategorised as category}
 		<Tiles title="{category.categoryName}">
-			<span slot="meta" style:margin-left="10px">
-				<strong>Chart type:</strong>
-				<label><input type=radio bind:group={chart_type} name="chart-type" value={BarChart}>Comparison marker</label>
-				<label><input type=radio bind:group={chart_type} name="chart-type" value={GroupChart}>Grouped bar</label>
-			</span>
 			{#each category.tables.filter(
 				t => !t.code.startsWith('resident_age') &&
 					data.selected.residents[t.code].values !== "blocked" &&
