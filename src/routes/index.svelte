@@ -516,9 +516,6 @@
   {#each newDatasets[0].tablesCategorised as category}
     <Tiles title={category.categoryName}>
       {#each category.tables.filter((t) => !t.code.startsWith("resident_age") && data.selected.residents[t.code].values !== "blocked" && data.selected.residents[t.code].values !== undefined) as table}
-        // as an input variable, so the data has not been requested from the API
-        // The following condition will occur when the output variable is the
-        same
         <Tile title={removeCategoryCountFromName(table.key)}>
           <!-- FIXME: check for missing data -->
           {#if data.selected.residents[table.code].values === "blocked"}
