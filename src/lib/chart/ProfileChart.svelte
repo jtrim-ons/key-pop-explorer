@@ -105,7 +105,7 @@
       {/each}
     {/if}
   {/each}
-  {#if maskRange != null}Í
+  {#if maskRange != null}
     {#if maskRange[0] != 0}
       <div
         class="mask"
