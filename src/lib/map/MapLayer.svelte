@@ -190,7 +190,7 @@
 				if (tooltip && state.name) {
 					popup
 						.setLngLat(e.lngLat)
-						.setHTML(`<strong>${state.name}</strong>${state.value ? "<br/>" + state.value.toFixed(1) + "%" : "<br/>Data not available"}`)
+						.setHTML(`<strong>${state.name}</strong>${state.value != null ? "<br/>" + state.value.toFixed(1) + "%" : "<br/>Data not available"}`)
 						.addTo(map);
 				}
       }
