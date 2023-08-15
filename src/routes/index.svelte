@@ -109,64 +109,60 @@
 		goto(`${base}?${selected.map(d => `${d.key}=${d.code}`).join('&')}`, {noscroll: true});
 	}
 
+	function processData(d) {
+		data.selected = d.data;
+		data.selected.total_pop = selected.length === 0 ?
+				makeSum(dataAll.residents.sex.values.count) :
+				d.total_pop;
+
+		data.geoPerc = [];
+		let groups = null;
+
+		if (true) {
+			// FIXME: check this against Ahmad's previous version,
+			//     and probably create 100% data in Python for no selections.
+			data.geoCodes.forEach(code => {
+				let value = selected.length === 0 ? 100 :
+										d.mapData[code] != null ? d.mapData[code][1] :
+										null;
+				data.geoPerc.push({code: code, name: data.geoLookup[code], value});
+			});
+
+			let vals = data.geoPerc.map(d => d.value).filter(d => d != null);
+			groups = vals[4] ? ckmeans(vals, 5) : null;
+		} else {
+			data.geoCodes.forEach(code => {
+				data.geoPerc.push({code: code, name: data.geoLookup[code], value: null});
+			});
+		}
+
+		if (groups == null) {
+			data.geoPerc.forEach(d => d.color = colors.nodata);
+			data.geoBreaks = [0, 100];
+		} else if (!groups[1]) {
+			data.geoPerc.forEach(d => d.color = colors.seq[4]);
+			data.geoBreaks = [0, 100];
+		} else {
+			let breaks = [];
+			groups.forEach(grp => breaks.push(grp[0]));
+			const endOfLastGroup = groups.flat().pop();
+			if (endOfLastGroup != breaks[breaks.length - 1])
+				breaks.push(endOfLastGroup);
+			data.geoPerc.forEach(
+				d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata
+			);
+			data.geoBreaks = breaks;
+		}
+
+		varcount = selected.length;
+		status = 'success';
+	}
+
 	function loadData() {
 		status = 'loading';
-
 		u16 = selected && selected.map(d => d.label).includes('Aged 15 years and under');
-
 		getData(newDatasets, selected)
-		.then(json => {
-				data.selected = json.data;
-				data.selected.total_pop = selected.length === 0 ?
-						makeSum(dataAll.residents.sex.values.count) :
-						json.total_pop;
-
-				let geoData = json.mapData;
-				let array = [];
-				let groups = null;
-
-				if (true) {
-					// FIXME: check this against Ahmad's previous version,
-					//     and probably create 100% data in Python for no selections.
-					if (selected.length === 0) {
-						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: 100});
-						});
-					} else {
-						data.geoCodes.forEach(code => {
-							array.push({code: code, name: data.geoLookup[code], value: geoData[code] != null ? geoData[code][1] : null});
-						});
-					}
-
-					let vals = array.map(d => d.value).filter(d => d != null);
-					groups = vals[4] ? ckmeans(vals, 5) : null;
-				} else {
-					data.geoCodes.forEach(code => {
-						array.push({code: code, name: data.geoLookup[code], value: null});
-					});
-				}
-
-				if (groups == null) {
-					array.forEach(d => d.color = colors.nodata);
-					data.geoBreaks = [0, 100];
-				} else if (!groups[1]) {
-					array.forEach(d => d.color = colors.seq[4]);
-					data.geoBreaks = [0, 100];
-				} else {
-					let breaks = [];
-					groups.forEach(grp => breaks.push(grp[0]));
-					breaks.push(groups[groups.length - 1][groups[groups.length - 1].length - 1]);
-					if (breaks[breaks.length - 1] == breaks[breaks.length - 2]) {
-						breaks.pop();
-					}
-					array.forEach(d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata);
-					data.geoBreaks = breaks;
-				}
-
-				data.geoPerc = array;
-				varcount = selected.length;
-				status = 'success';
-		});
+			.then(processData);
 	}
 
 	function makeDataNew(props) {
