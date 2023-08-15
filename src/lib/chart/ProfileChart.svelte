@@ -30,7 +30,6 @@
     for (const key in data_indexed) {
       data_stacked.push(data_indexed[key]);
     }
-    console.log(data_stacked);
     return data_stacked;
   }
 
