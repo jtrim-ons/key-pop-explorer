@@ -55,7 +55,7 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
 }
 
 export function getColor(value, breaks, colors) {
-  for (let i = 1; i < breaks.length; i ++) {
+  for (let i = 1; i < breaks.length; i++) {
     if (value <= breaks[i]) {
       return colors[i - 1];
     }
