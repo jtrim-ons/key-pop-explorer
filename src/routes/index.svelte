@@ -213,7 +213,14 @@
     status = "loading";
     u16 =
       selected &&
-      selected.map((d) => d.label).includes("Aged 15 years and under");
+      selected.some((d) =>
+        [
+          "Aged 4 years and under",
+          "Aged 5 to 9 years",
+          "Aged 10 to 14 years",
+          "Aged 15 years and under",
+        ].includes(d.label)
+      );
     getData(newDatasets, selected).then(processData);
   }
 
@@ -508,8 +515,10 @@
 
   {#each newDatasets[0].tablesCategorised as category}
     <Tiles title={category.categoryName}>
-      {#each category.tables.filter((t) => !t.code.startsWith("resident_age") && data.selected.residents[t.code].values !== "blocked" && // as an input variable, so the data has not been requested from the API // The following condition will occur when the output variable is the same
-          data.selected.residents[t.code].values !== undefined) as table}
+      {#each category.tables.filter((t) => !t.code.startsWith("resident_age") && data.selected.residents[t.code].values !== "blocked" && data.selected.residents[t.code].values !== undefined) as table}
+        // as an input variable, so the data has not been requested from the API
+        // The following condition will occur when the output variable is the
+        same
         <Tile title={removeCategoryCountFromName(table.key)}>
           <!-- FIXME: check for missing data -->
           {#if data.selected.residents[table.code].values === "blocked"}
