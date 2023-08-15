@@ -9,7 +9,9 @@
     let geojson = await getTopo(assets + ladBounds.url, ladBounds.layer, fetch);
 
     let geoLookup = {};
-    geojson.features.forEach(d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]);
+    geojson.features.forEach(
+			d => geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name]
+		);
 
 		let dataAll = (await getData(newDatasets, [], fetch)).data;
 		dataAll.total_pop = makeSum(dataAll.residents.sex.values.count);
@@ -110,15 +112,10 @@
 	function loadData() {
 		status = 'loading';
 
-		if (selected && selected.map(d => d.label).includes('Aged 15 years and under')) {
-			u16 = true;
-		} else {
-			u16 = false;
-		}
+		u16 = selected && selected.map(d => d.label).includes('Aged 15 years and under');
 
 		getData(newDatasets, selected)
 		.then(json => {
-			if (json.data.residents.sex.values) {  // 	WAS: if (json.data.residents.age.values) {
 				data.selected = json.data;
 				data.selected.total_pop = selected.length === 0 ?
 						makeSum(dataAll.residents.sex.values.count) :
@@ -169,9 +166,6 @@
 				data.geoPerc = array;
 				varcount = selected.length;
 				status = 'success';
-			} else {
-				status = 'failed';
-			}
 		});
 	}
 
@@ -198,12 +192,10 @@
 		selected = []
     for (let pair of $page.url.searchParams.entries()) {
       let variable = vars.find(d => d.key == pair[0]);
-      if (variable) {
-        let category = variable.cats.find(d => d.code == pair[1]);
-        if (category) {
-          selected.push({topic: variable.label, key: variable.key, ...category});
-        }
-      }
+      if (!variable) continue;
+      let category = variable.cats.find(d => d.code == pair[1]);
+      if (!category) continue;
+      selected.push({topic: variable.label, key: variable.key, ...category});
     }
     loadData();
 	}
