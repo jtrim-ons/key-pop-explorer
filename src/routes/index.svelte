@@ -109,6 +109,15 @@
 		goto(`${base}?${selected.map(d => `${d.key}=${d.code}`).join('&')}`, {noscroll: true});
 	}
 
+	function groupsToBreaks(groups) {
+		let breaks = [];
+		groups.forEach(g => breaks.push(g[0]));
+		const endOfLastGroup = groups.flat().pop();
+		if (groups.length === 1 || endOfLastGroup != breaks[breaks.length - 1])
+			breaks.push(endOfLastGroup);
+		return breaks;
+	}
+
 	function processData(d) {
 		data.selected = d.data;
 		data.selected.total_pop = selected.length === 0 ?
@@ -129,7 +138,7 @@
 			});
 
 			let vals = data.geoPerc.map(d => d.value).filter(d => d != null);
-			groups = vals[4] ? ckmeans(vals, 5) : null;
+			groups = vals.length === 0 ? null : ckmeans(vals, Math.min(5, vals.length));
 		} else {
 			data.geoCodes.forEach(code => {
 				data.geoPerc.push({code: code, name: data.geoLookup[code], value: null});
@@ -139,15 +148,11 @@
 		if (groups == null) {
 			data.geoPerc.forEach(d => d.color = colors.nodata);
 			data.geoBreaks = [0, 100];
-		} else if (!groups[1]) {
+		} else if (selected.length === 0) {
 			data.geoPerc.forEach(d => d.color = colors.seq[4]);
-			data.geoBreaks = [0, 100];
+			data.geoBreaks = [100, 100];
 		} else {
-			let breaks = [];
-			groups.forEach(grp => breaks.push(grp[0]));
-			const endOfLastGroup = groups.flat().pop();
-			if (endOfLastGroup != breaks[breaks.length - 1])
-				breaks.push(endOfLastGroup);
+			let breaks = groupsToBreaks(groups);
 			data.geoPerc.forEach(
 				d => d.color = d.value != null ? getColor(d.value, breaks, colors.seq) : colors.nodata
 			);
@@ -367,7 +372,7 @@
 		</Tile>
 		<Tile title="Areas with high %">
 			{#if data.geoPerc && selected[0]}
-			<Table data={[...data.geoPerc].sort((a, b) => b.value - a.value).slice(0, 5)}/>
+			<Table data={[...data.geoPerc].filter(d => d.value != null).sort((a, b) => b.value - a.value).slice(0, 5)}/>
 			{:else}
 			<span class="muted">Make a selection to see rankings.</span>
 			{/if}
