@@ -256,7 +256,7 @@
 		<div class="chip-loader"/>
 	</div>
 	{:else}
-	<div class="chip" class:chip-inactive={i >= varcount}>
+	<div class="chip">
 		<span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
 		<button on:click="{() => unSelect(item.topic)}"/>
 	</div>
@@ -524,10 +524,6 @@
 		margin: 0 5px 5px 0;
 		line-height: normal;
 	}
-	.chip-inactive {
-		background-color: rgb(250, 230, 232);
-		border-color: #d0021b;
-	}
 	.chip-pending {
 		background-color: #fef4ee;
 		border-color: #ff803b;
@@ -542,9 +538,6 @@
 		height: 20px;
 		border: none;
 		border-radius: 50%;
-	}
-	.chip-inactive button {
-		background-color: #d0021b;
 	}
 	.chip-loader {
 		box-sizing: border-box;
