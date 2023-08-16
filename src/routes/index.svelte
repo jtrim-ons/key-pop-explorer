@@ -54,8 +54,7 @@
   } from "$lib/utils";
   import {
     themes,
-    vars as vars_,
-    newVars,
+    vars,
     codes,
     mapStyle,
     texts,
@@ -80,8 +79,6 @@
   import Em from "$lib/ui/Em.svelte";
 
   export let geojson, geoLookup, dataAll, geoCodes, geoPerc;
-
-  let vars = vars_.concat(newVars);
 
   // STYLE CONFIG
   // Set theme globally (options are 'light' or 'dark')
