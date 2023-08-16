@@ -115,6 +115,7 @@ inputClassifications.forEach(c => {
     c = allClassifications[c];
     vars.push({
         label: c.label,
+				shortLabel: c.label.replace(new RegExp(" \\(.*$"), ""),
         key: c.id,
         cats: c.categories.filter(d => d.id !== '-8').map(d => ({
             var: c.id,
@@ -126,6 +127,24 @@ inputClassifications.forEach(c => {
 });
 
 vars.sort((a, b) => a.label.localeCompare(b.label));
+
+function nestVars(vars) {
+	var shortLabels = new Set(vars.map(v => v.shortLabel));
+	var nested = {};
+	for (let v of vars) {
+		nested[v.shortLabel] ||= [];
+		nested[v.shortLabel].push(v);
+	}
+	for (let l of shortLabels) {
+		nested[l].sort((a, b) => a.cats.length - b.cats.length);
+	}
+	let result = [];
+	shortLabels.forEach(label => result.push({label, vars: nested[label]}));
+	return result;
+}
+
+export let varsNested = nestVars(vars);
+console.log(varsNested)
 
 export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
 export const ladBounds = {

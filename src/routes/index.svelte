@@ -55,6 +55,7 @@
   import {
     themes,
     vars,
+    varsNested,
     codes,
     mapStyle,
     texts,
@@ -77,6 +78,7 @@
   import Tiles from "$lib/layout/Tiles.svelte";
   import Tile from "$lib/layout/partial/Tile.svelte";
   import Em from "$lib/ui/Em.svelte";
+  import OptionPicker from "$lib/ui/OptionPicker.svelte";
 
   export let geojson, geoLookup, dataAll, geoCodes, geoPerc;
 
@@ -305,6 +307,7 @@
         >
       {/each}
     </select>
+    <OptionPicker options={varsNested} />
 
     {#if active}
       <select bind:value={active_cats[active.label]}>
