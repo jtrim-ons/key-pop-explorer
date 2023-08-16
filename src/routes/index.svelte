@@ -124,9 +124,21 @@
   };
 
   function doSelect(topic) {
+    console.log(topic, active.label, active.key, active_cats[topic]);
     selected = [
       ...selected,
       { topic: active.label, key: active.key, ...active_cats[topic] },
+    ];
+    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
+      noscroll: true,
+    });
+    active = null;
+  }
+
+  function doSelect2(variable, cat) {
+    selected = [
+      ...selected,
+      { topic: variable.label, key: variable.key, ...cat },
     ];
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
       noscroll: true,
@@ -307,7 +319,7 @@
         >
       {/each}
     </select>
-    <OptionPicker options={varsNested} />
+    <OptionPicker options={varsNested} catCallback={doSelect2} />
 
     {#if active}
       <select bind:value={active_cats[active.label]}>
