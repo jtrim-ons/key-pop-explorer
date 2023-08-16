@@ -19,8 +19,6 @@ function getSelString(sel) {
 }
 
 export async function getData(datasets, sel = [], fetch = window.fetch) {
-  console.log({datasets, sel});
-
   if (sel.length > 0 && !sel[0].newFormat) {
     throw new Error("OLD FORMAT!");
   }
@@ -48,8 +46,6 @@ export async function getData(datasets, sel = [], fetch = window.fetch) {
       retval.data[dataset.key][table.code] = {values: barChartData[table.code]};
     }
   }
-
-  console.log({barChartData, retval});
 
   return retval;
 }
