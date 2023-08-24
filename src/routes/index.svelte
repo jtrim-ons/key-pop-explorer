@@ -124,10 +124,10 @@
   };
 
   function doSelect(topic) {
-    console.log(topic, active.label, active.key, active_cats[topic]);
+    console.log(topic, active.shortLabel, active.key, active_cats[topic]);
     selected = [
       ...selected,
-      { topic: active.label, key: active.key, ...active_cats[topic] },
+      { topic: active.shortLabel, key: active.key, ...active_cats[topic] },
     ];
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
       noscroll: true,
@@ -138,7 +138,7 @@
   function doSelect2(variable, cat) {
     selected = [
       ...selected,
-      { topic: variable.label, key: variable.key, ...cat },
+      { topic: variable.shortLabel, key: variable.key, ...cat },
     ];
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
       noscroll: true,
@@ -262,7 +262,11 @@
       if (!variable) continue;
       let category = variable.cats.find((d) => d.code == pair[1]);
       if (!category) continue;
-      selected.push({ topic: variable.label, key: variable.key, ...category });
+      selected.push({
+        topic: variable.shortLabel,
+        key: variable.key,
+        ...category,
+      });
     }
     loadData();
   }
