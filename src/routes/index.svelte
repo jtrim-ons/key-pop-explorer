@@ -91,12 +91,7 @@
   let map = null;
 
   // State
-  let active = null;
-  let active_cats = {};
   let selected = [];
-  vars.forEach((d) => {
-    active_cats[d.label] = d.cats[0];
-  });
   let hovered = null;
   let status = "success"; // Options: success, fail, loading
   let u16 = false; // If age selection is 0-15 some tables won't show data
@@ -123,27 +118,32 @@
     geoBreaks: [0, 100],
   };
 
-  function doSelect(topic) {
-    console.log(topic, active.shortLabel, active.key, active_cats[topic]);
+  function doSelect(variable, cat) {
+    console.log("doSelect2", variable, cat);
     selected = [
-      ...selected,
-      { topic: active.shortLabel, key: active.key, ...active_cats[topic] },
-    ];
-    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
-      noscroll: true,
-    });
-    active = null;
-  }
-
-  function doSelect2(variable, cat) {
-    selected = [
-      ...selected,
+      ...selected.filter((d) => d.topic !== variable.shortLabel),
       { topic: variable.shortLabel, key: variable.key, ...cat },
     ];
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
       noscroll: true,
     });
-    active = null;
+  }
+
+  function doDeselect(variable, cat) {
+    console.log("doDeselect", variable, cat);
+    selected = selected.filter((d) => d.label !== cat.label);
+    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
+      noscroll: true,
+    });
+  }
+
+  function checkIfOptionSelected(cat) {
+    for (const s of selected) {
+      if (s.var === cat.var && s.code === cat.code) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function unSelect(topic) {
@@ -311,36 +311,6 @@
     >.
   </p>
   <div slot="meta" class="wrapper">
-    <select bind:value={active} disabled={!ops}>
-      <option value={null}
-        >{selected.length
-          ? "Select another characteristic"
-          : "Select a characteristic"}</option
-      >
-      {#each ops as op, i}
-        <option value={op}
-          >{capitalise(op.label)} [{getUnblockedCount(op)} charts]</option
-        >
-      {/each}
-    </select>
-    <OptionPicker options={varsNested} catCallback={doSelect2} />
-
-    {#if active}
-      <select bind:value={active_cats[active.label]}>
-        {#each active.cats as cat}
-          <option value={cat}
-            >{@html cat.indent
-              ? Array.from({ length: cat.indent - 1 }, (v) => spacer).join("") +
-                arrow
-              : ""}{capitalise(cat.label)}</option
-          >
-        {/each}
-      </select>
-      <button class="btn" on:mouseup={() => doSelect(active.label)}>
-        Add
-      </button>
-    {/if}
-
     {#if selected[0]}
       <br />
       {#each selected as item, i}
@@ -370,6 +340,14 @@
         {/if}
       </div>
     {/if}
+
+    <OptionPicker
+      options={varsNested}
+      clickCallback={doSelect}
+      removeCatCallback={doDeselect}
+      {checkIfOptionSelected}
+      globalSelectedCategories={selected}
+    />
   </div>
 </Titleblock>
 
