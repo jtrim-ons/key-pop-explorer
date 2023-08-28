@@ -137,15 +137,6 @@
     });
   }
 
-  function checkIfOptionSelected(cat) {
-    for (const s of selected) {
-      if (s.var === cat.var && s.code === cat.code) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   function unSelect(topic) {
     selected = selected.filter((d) => d.topic != topic);
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
@@ -282,9 +273,9 @@
 </script>
 
 <svelte:head>
-  <title>Census Population Group Profiles</title>
+  <title>Create a population group profile</title>
   <meta name="description" content="" />
-  <meta property="og:title" content="Census Population Group Profiles" />
+  <meta property="og:title" content="Create a population group profile" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{assets}/" />
   <meta property="og:image:type" content="image/jpeg" />
@@ -296,10 +287,10 @@
   background="none"
   breadcrumb={[
     { label: "Census", url: "/census" },
-    { label: "Population Group Profiles" },
+    { label: "Create a population group profile" },
   ]}
 >
-  <Headline>Population Group Profiles</Headline>
+  <Headline>Create a population group profile</Headline>
   <p class="subtitle">
     Select one or more identity characteristics to define a population group to
     compare with the whole population of England and Wales. For example, see <a
@@ -345,7 +336,6 @@
       options={varsNested}
       clickCallback={doSelect}
       removeCatCallback={doDeselect}
-      {checkIfOptionSelected}
       globalSelectedCategories={selected}
     />
   </div>

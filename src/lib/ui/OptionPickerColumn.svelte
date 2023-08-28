@@ -2,7 +2,6 @@
   export let options = [];
   export let clickCallback = clicked;
   export let removeCatCallback = clicked;
-  export let checkIfOptionSelected = () => {};
   export let globalSelectedCategories = [];
   export let columnTitle = "column title";
   export let labeller = (option) => option.label;
@@ -21,6 +20,17 @@
         return c.label;
       }
     }
+    return false;
+  }
+
+  function checkIfOptionSelected(cat, globalSelectedCategories) {
+    for (const s of globalSelectedCategories) {
+      if (s.var === cat.var && s.code === cat.code) {
+        console.log(s, cat);
+        return true;
+      }
+    }
+    console.log("f");
     return false;
   }
 </script>
