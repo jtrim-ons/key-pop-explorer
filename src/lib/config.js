@@ -52,7 +52,8 @@ outputClassifications.forEach(c => {
 	}
 });
 
-export let newDatasets = [
+// The datasets used for charts
+export let datasets = [
   {
 		key: 'residents',
 		code: 'Usual-Residents',
@@ -63,51 +64,26 @@ export let newDatasets = [
 
 outputClassifications.forEach(c => {
 	const classification = allClassifications[c.code];
-    newDatasets[0].tables.push({
+    datasets[0].tables.push({
         key: classification.label,
         code: classification.id
     });
 });
 
 outputClassificationsCategorised.forEach(category => {
-	newDatasets[0].tablesCategorised.push({
+	datasets[0].tablesCategorised.push({
 		categoryName: category.category_name,
 		tables: []
 	});
 	for (const code of category.classification_codes) {
 		const classification = allClassifications[code];
-			newDatasets[0].tablesCategorised[newDatasets[0].tablesCategorised.length - 1].tables.push({
+			datasets[0].tablesCategorised[datasets[0].tablesCategorised.length - 1].tables.push({
 				key: classification.label,
 				code: classification.id
 		});
 
 	}
 });
-
-// The datasets used for charts
-export const datasets = [
-	{
-		key: 'residents',
-		code: 'Usual-Residents',
-		tables: [
-			{ key: 'age', code: 'AGE' },
-			{ key: 'economic', code: 'ECOPUK11_R006A' },
-			{ key: 'travel', code: 'TRANSPORT' },
-			{ key: 'distance', code: 'AGGDTWPEW11_R010A' },
-			{ key: 'health', code: 'HEALTH' },
-			{ key: 'grade', code: 'SCGPUK11C' },
-			{ key: 'marital', code: "MARSTAT"}
-		]
-	},
-	{
-		key: 'households',
-		code: 'Household-Ref-Persons',
-		tables: [
-			{ key: 'housing', code: 'TYPACCOM' },
-			{ key: 'tenure', code: 'TENHUK11' }
-		]
-	}
-];
 
 export let vars = [];
 

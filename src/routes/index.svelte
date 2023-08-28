@@ -2,13 +2,7 @@
   export const prerender = false;
 
   import { getTopo, getData, removeCategoryCountFromName } from "$lib/utils";
-  import {
-    ladBounds,
-    datasets,
-    newDatasets,
-    colors,
-    populationBases,
-  } from "$lib/config";
+  import { ladBounds, datasets, colors, populationBases } from "$lib/config";
   import { base, assets } from "$app/paths";
 
   export async function load({ fetch }) {
@@ -20,7 +14,7 @@
         (geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name])
     );
 
-    let dataAll = (await getData(newDatasets, [], fetch)).data;
+    let dataAll = (await getData(datasets, [], fetch)).data;
     dataAll.total_pop = makeSum(dataAll.residents.sex.values.count);
 
     let geoPerc = [];
@@ -223,7 +217,7 @@
           "Aged 15 years and under",
         ].includes(d.label)
       );
-    getData(newDatasets, selected).then(processData);
+    getData(datasets, selected).then(processData);
   }
 
   function makeDataNew(props) {
@@ -497,7 +491,7 @@
     >
   </span>
 
-  {#each newDatasets[0].tablesCategorised as category}
+  {#each datasets[0].tablesCategorised as category}
     <Tiles title={category.categoryName}>
       {#each category.tables.filter((t) => !t.code.startsWith("resident_age") && data.selected.residents[t.code].values !== "blocked" && data.selected.residents[t.code].values !== undefined) as table}
         <Tile title={removeCategoryCountFromName(table.key)}>
