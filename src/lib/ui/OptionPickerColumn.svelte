@@ -95,6 +95,9 @@
     padding: 6px;
     font-size: 16px;
   }
+  button.plain-button:last-child {
+    border-bottom: none;
+  }
   button.selected {
     background-color: steelblue;
     color: white;
