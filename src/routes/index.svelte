@@ -212,9 +212,7 @@
     getData(datasets, selected).then(processData);
   }
 
-  function makeDataNew(props) {
-    let group = props[0];
-    let dataset = props[1];
+  function makeDataNew(group, dataset) {
     let valsAll = data.all[group][dataset].values;
     let valsSelected = data.selected[group][dataset].values;
 
@@ -349,6 +347,7 @@
         </div>
       {/if}
     </Tile>
+    <!-- <AgeProfileTile data={0}></AgeProfileTile> -->
     <Tile title="Age profile">
       {#if data.selected.residents.resident_age_18b.values === "blocked"}
         <span class="num-desc">{texts.nodata}</span>
@@ -356,7 +355,7 @@
         <span class="num-desc">{texts.nodata}</span>
       {:else}
         <ProfileChart
-          data={data.selected && makeDataNew(["residents", "resident_age_18b"])}
+          data={data.selected && makeDataNew("residents", "resident_age_18b")}
           zKey="group"
           maskRange={computeMaskRange(selected)}
         />
@@ -495,7 +494,7 @@
           {:else}
             <svelte:component
               this={chart_type}
-              data={data.selected && makeDataNew(["residents", table.code])}
+              data={data.selected && makeDataNew("residents", table.code)}
             />
           {/if}
           <span class="num-desc">% of {populationBases[table.code]}</span>
