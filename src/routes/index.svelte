@@ -69,8 +69,10 @@
   let theme = "light";
   setContext("theme", themes[theme]);
 
-  // Elements
-  //let map = null;
+  let chartTypeOptions = [
+    { name: "Comparison marker", component: BarChart },
+    { name: "Grouped bar", component: GroupChart },
+  ];
 
   // State
   let selected = [];
@@ -304,22 +306,16 @@
   <!-- <span slot="meta" style:margin-left="10px"> -->
   <span>
     <strong>Chart type:</strong>
-    <label
-      ><input
-        type="radio"
-        bind:group={chart_type}
-        name="chart-type"
-        value={BarChart}
-      />Comparison marker</label
-    >
-    <label
-      ><input
-        type="radio"
-        bind:group={chart_type}
-        name="chart-type"
-        value={GroupChart}
-      />Grouped bar</label
-    >
+    {#each chartTypeOptions as chartTypeOption}
+      <label
+        ><input
+          type="radio"
+          bind:group={chart_type}
+          name="chart-type"
+          value={chartTypeOption.component}
+        />{chartTypeOption.name}</label
+      >
+    {/each}
   </span>
 
   {#each datasets[0].tablesCategorised as category}
