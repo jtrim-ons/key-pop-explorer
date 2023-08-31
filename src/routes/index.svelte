@@ -379,9 +379,6 @@
     color: #206095;
     background-color: lightgrey;
   }
-  .muted {
-    color: grey;
-  }
   select {
     appearance: none;
     background: white

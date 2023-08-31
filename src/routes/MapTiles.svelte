@@ -113,3 +113,13 @@
     {/if}
   </Tile>
 </Tiles>
+
+<style>
+  .muted {
+    color: grey;
+  }
+  .subtitle {
+    /* TODO avoid duplication with index.svelte */
+    margin: 8px 0;
+  }
+</style>
