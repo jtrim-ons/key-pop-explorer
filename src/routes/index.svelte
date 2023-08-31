@@ -37,7 +37,12 @@
   import { goto, afterNavigate } from "$app/navigation";
   import { setContext } from "svelte";
   import { ckmeans } from "simple-statistics";
-  import { getColor, capitalise, makeSum } from "$lib/utils";
+  import {
+    getColor,
+    capitalise,
+    makeSum,
+    computeAgeMaskRange,
+  } from "$lib/utils";
   import {
     themes,
     vars,
@@ -48,7 +53,6 @@
     arrow,
     spacer,
     unblockedCombinationCounts,
-    maskRanges,
   } from "$lib/config";
   import Titleblock from "$lib/layout/Titleblock.svelte";
   import Headline from "$lib/layout/partial/Headline.svelte";
@@ -246,13 +250,6 @@
     loadData();
   }
 
-  function computeMaskRange(selected) {
-    for (const s of selected)
-      if (s.var in maskRanges) return maskRanges[s.var][s.code];
-
-    return null;
-  }
-
   afterNavigate(refreshData); // Refresh data when user navigates
 </script>
 
@@ -357,7 +354,7 @@
         <ProfileChart
           data={data.selected && makeDataNew("residents", "resident_age_18b")}
           zKey="group"
-          maskRange={computeMaskRange(selected)}
+          maskRange={computeAgeMaskRange(selected)}
         />
       {/if}
     </Tile>

@@ -1,5 +1,7 @@
 import { feature } from 'topojson-client';
 
+import { maskRanges } from "$lib/config";
+
 const endpoint = "https://raw.githubusercontent.com/jtrim-ons/key-pop-api-downloader/main/generated/";
 
 function getSelString(sel) {
@@ -84,14 +86,13 @@ export function makeSum(values) {
   return sum;
 }
 
-export function isNA(arr) {
-  // FIXME
-  return false;
-
-  let sum = arr ? arr.slice(0,-1).reduce((a, b) => a + b) : 0;
-  return sum == 0;
-}
-
 export function removeCategoryCountFromName(name) {
   return name.replace(new RegExp(" \\([0-9]* categories\\)"), "");
+}
+
+export function computeAgeMaskRange(selected) {
+  for (const s of selected)
+    if (s.var in maskRanges) return maskRanges[s.var][s.code];
+
+  return null;
 }
