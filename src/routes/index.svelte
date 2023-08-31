@@ -33,7 +33,7 @@
 </script>
 
 <script>
-  import BarChartTile from "./BarChartTile.svelte";
+  import BarChartTile from "../lib/ui/tiles/BarChartTile.svelte";
 
   import PopulationTile from "../lib/ui/tiles/PopulationTile.svelte";
   import AgeProfileTile from "../lib/ui/tiles/AgeProfileTile.svelte";
