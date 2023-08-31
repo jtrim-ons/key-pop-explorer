@@ -43,8 +43,8 @@
     getColor,
     capitalise,
     makeSum,
-    computeAgeMaskRange,
     makeDataNew,
+    calcPopPercentString,
   } from "$lib/utils";
   import {
     themes,
@@ -318,14 +318,10 @@
           people (TODO: calculate this percentage in Python)
         </div>
         <div class="num-desc">
-          <Em color="lightgrey" />{data.selected.total_pop ===
-          data.all.total_pop
-            ? 100
-            : ((data.selected.total_pop / data.all.total_pop) * 100).toFixed(
-                1
-              ) !== "0.0"
-            ? ((data.selected.total_pop / data.all.total_pop) * 100).toFixed(1)
-            : "Less than 0.05"}% of the total population of England and Wales
+          <Em color="lightgrey" />{calcPopPercentString(
+            data.selected.total_pop,
+            data.all.total_pop
+          )}% of the total population of England and Wales
         </div>
       {/if}
     </Tile>
