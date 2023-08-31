@@ -101,7 +101,6 @@
   };
 
   function doSelect(variable, cat) {
-    console.log("doSelect2", variable, cat);
     selected = [
       ...selected.filter((d) => d.topic !== variable.shortLabel),
       { topic: variable.shortLabel, key: variable.key, ...cat },
@@ -112,7 +111,6 @@
   }
 
   function doDeselect(variable, cat) {
-    console.log("doDeselect", variable, cat);
     selected = selected.filter((d) => d.label !== cat.label);
     goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
       noscroll: true,
