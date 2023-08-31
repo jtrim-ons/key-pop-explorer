@@ -37,15 +37,7 @@
   import { goto, afterNavigate } from "$app/navigation";
   import { setContext } from "svelte";
   import { ckmeans } from "simple-statistics";
-  import {
-    getColor,
-    capitalise,
-    makeSum,
-    isNA,
-    suffixer,
-    changeClass,
-    changeStr,
-  } from "$lib/utils";
+  import { getColor, capitalise, makeSum, isNA } from "$lib/utils";
   import {
     themes,
     vars,
