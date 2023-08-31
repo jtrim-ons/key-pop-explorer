@@ -37,7 +37,7 @@
   import { goto, afterNavigate } from "$app/navigation";
   import { setContext } from "svelte";
   import { ckmeans } from "simple-statistics";
-  import { getColor, capitalise, makeSum, isNA } from "$lib/utils";
+  import { getColor, capitalise, makeSum } from "$lib/utils";
   import {
     themes,
     vars,
@@ -350,13 +350,13 @@
       {/if}
     </Tile>
     <Tile title="Age profile">
-      {#if data.selected.residents.resident_age_23a.values === "blocked"}
+      {#if data.selected.residents.resident_age_18b.values === "blocked"}
         <span class="num-desc">{texts.nodata}</span>
-      {:else if isNA(data.selected.residents.resident_age_23a.values.percent)}
+      {:else if data.selected.residents.resident_age_18b.values.percent[0] == null}
         <span class="num-desc">{texts.nodata}</span>
       {:else}
         <ProfileChart
-          data={data.selected && makeDataNew(["residents", "resident_age_23a"])}
+          data={data.selected && makeDataNew(["residents", "resident_age_18b"])}
           zKey="group"
           maskRange={computeMaskRange(selected)}
         />
