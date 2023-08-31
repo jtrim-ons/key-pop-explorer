@@ -33,6 +33,8 @@
 </script>
 
 <script>
+  import BarChartTile from "./BarChartTile.svelte";
+
   import PopulationTile from "../lib/ui/tiles/PopulationTile.svelte";
   import AgeProfileTile from "../lib/ui/tiles/AgeProfileTile.svelte";
 
@@ -435,20 +437,12 @@
   {#each datasets[0].tablesCategorised as category}
     <Tiles title={category.categoryName}>
       {#each category.tables.filter((t) => !t.code.startsWith("resident_age") && data.selected.residents[t.code].values !== "blocked" && data.selected.residents[t.code].values !== undefined) as table}
-        <Tile title={removeCategoryCountFromName(table.key)}>
-          <!-- FIXME: check for missing data -->
-          {#if data.selected.residents[table.code].values === "blocked"}
-            <span class="num-desc">{texts.blocked}</span>
-          {:else if data.selected.residents[table.code].values.percent[0] == null}
-            <span class="num-desc">{texts.nodata}</span>
-          {:else}
-            <svelte:component
-              this={chart_type}
-              data={data.selected && makeDataNew("residents", table.code, data)}
-            />
-          {/if}
-          <span class="num-desc">% of {populationBases[table.code]}</span>
-        </Tile>
+        <BarChartTile
+          title={removeCategoryCountFromName(table.key)}
+          {table}
+          {data}
+          {chart_type}
+        />
       {/each}
     </Tiles>
   {/each}
