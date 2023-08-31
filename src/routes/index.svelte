@@ -2,7 +2,7 @@
   export const prerender = false;
 
   import { getTopo, getData, removeCategoryCountFromName } from "$lib/utils";
-  import { ladBounds, datasets, colors, populationBases } from "$lib/config";
+  import { ladBounds, datasets, colors } from "$lib/config";
   import { base, assets } from "$app/paths";
 
   export async function load({ fetch }) {
@@ -44,34 +44,22 @@
   import { goto, afterNavigate } from "$app/navigation";
   import { setContext } from "svelte";
   import { ckmeans } from "simple-statistics";
-  import {
-    getColor,
-    capitalise,
-    makeSum,
-    makeDataNew,
-    calcPopPercentString,
-  } from "$lib/utils";
+  import { getColor, capitalise, makeSum } from "$lib/utils";
   import {
     themes,
     vars,
     varsNested,
     mapStyle,
-    texts,
     arrow,
     spacer,
     unblockedCombinationCounts,
   } from "$lib/config";
   import Titleblock from "$lib/layout/Titleblock.svelte";
   import Headline from "$lib/layout/partial/Headline.svelte";
-  import ProfileChart from "$lib/chart/ProfileChart.svelte";
-  import BreaksChart from "$lib/chart/BreaksChart.svelte";
   import BarChart from "$lib/chart/BarChart.svelte";
   import GroupChart from "$lib/chart/GroupChart.svelte";
-  import Table from "$lib/chart/Table.svelte";
   import Content from "$lib/layout/Content.svelte";
   import Tiles from "$lib/layout/Tiles.svelte";
-  import Tile from "$lib/layout/partial/Tile.svelte";
-  import Em from "$lib/ui/Em.svelte";
   import OptionPicker from "$lib/ui/OptionPicker.svelte";
 
   export let geojson, geoLookup, dataAll, geoCodes, geoPerc;
@@ -91,8 +79,6 @@
   let u16 = false; // If age selection is 0-15 some tables won't show data
   let varcount = 0; // Number of variables successfully loaded
   let chart_type = BarChart;
-
-  $: ops = vars.filter((d) => !selected.map((d) => d.topic).includes(d.label));
 
   const getUnblockedCount = (op) =>
     unblockedCombinationCounts[
