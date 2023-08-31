@@ -33,6 +33,7 @@
 </script>
 
 <script>
+  import PopulationTile from "../lib/ui/tiles/PopulationTile.svelte";
   import AgeProfileTile from "../lib/ui/tiles/AgeProfileTile.svelte";
 
   import { page } from "$app/stores";
@@ -309,22 +310,7 @@
 
 <Content>
   <Tiles title="Demographics">
-    <Tile title="Population">
-      {#if data.selected.total_pop == 0}
-        <div class="num-desc">{texts.nodata}</div>
-      {:else}
-        <div class="num-big">{data.selected.total_pop.toLocaleString()}</div>
-        <div class="num-suffix">
-          people (TODO: calculate this percentage in Python)
-        </div>
-        <div class="num-desc">
-          <Em color="lightgrey" />{calcPopPercentString(
-            data.selected.total_pop,
-            data.all.total_pop
-          )}% of the total population of England and Wales
-        </div>
-      {/if}
-    </Tile>
+    <PopulationTile {data} />
     <AgeProfileTile {data} {selected} />
   </Tiles>
 
@@ -547,17 +533,6 @@
     padding: 10px;
     font-size: 0.9rem;
     margin-bottom: 5px;
-  }
-  .num-big {
-    display: block;
-    font-size: 3rem;
-    font-weight: bold;
-    line-height: 1.2;
-  }
-  .num-suffix {
-    display: block;
-    max-width: 100%;
-    margin-left: 2px;
   }
   .num-desc {
     display: block;
