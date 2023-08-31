@@ -33,6 +33,8 @@
 </script>
 
 <script>
+  import AgeProfileTile from "../lib/ui/tiles/AgeProfileTile.svelte";
+
   import { page } from "$app/stores";
   import { goto, afterNavigate } from "$app/navigation";
   import { setContext } from "svelte";
@@ -327,21 +329,7 @@
         </div>
       {/if}
     </Tile>
-    <!-- <AgeProfileTile data={0}></AgeProfileTile> -->
-    <Tile title="Age profile">
-      {#if data.selected.residents.resident_age_18b.values === "blocked"}
-        <span class="num-desc">{texts.nodata}</span>
-      {:else if data.selected.residents.resident_age_18b.values.percent[0] == null}
-        <span class="num-desc">{texts.nodata}</span>
-      {:else}
-        <ProfileChart
-          data={data.selected &&
-            makeDataNew("residents", "resident_age_18b", data, codes)}
-          zKey="group"
-          maskRange={computeAgeMaskRange(selected)}
-        />
-      {/if}
-    </Tile>
+    <AgeProfileTile {data} {selected} />
   </Tiles>
 
   <Tiles title="Population by area">
