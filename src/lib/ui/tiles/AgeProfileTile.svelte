@@ -23,3 +23,14 @@
     />
   {/if}
 </Tile>
+
+<style>
+  .num-desc {
+    /* TODO share code with .num-desc in index.svelte? */
+    display: block;
+    margin-top: 10px;
+    color: #707070;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+</style>
