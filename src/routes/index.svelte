@@ -42,6 +42,7 @@
     capitalise,
     makeSum,
     computeAgeMaskRange,
+    makeDataNew,
   } from "$lib/utils";
   import {
     themes,
@@ -216,24 +217,6 @@
     getData(datasets, selected).then(processData);
   }
 
-  function makeDataNew(group, dataset) {
-    let valsAll = data.all[group][dataset].values;
-    let valsSelected = data.selected[group][dataset].values;
-
-    let arr = [];
-
-    codes[dataset].forEach((cd, i) => {
-      let label = cd.label;
-      let valAll = valsAll.percent[i];
-      let valSelected = valsSelected.percent[i];
-      if (data.selected.total_pop != data.all.total_pop)
-        arr.push({ group: "This group", category: label, value: valSelected });
-      arr.push({ group: "Whole population", category: label, value: valAll });
-    });
-
-    return arr;
-  }
-
   function refreshData() {
     selected = [];
     for (let pair of $page.url.searchParams.entries()) {
@@ -352,7 +335,8 @@
         <span class="num-desc">{texts.nodata}</span>
       {:else}
         <ProfileChart
-          data={data.selected && makeDataNew("residents", "resident_age_18b")}
+          data={data.selected &&
+            makeDataNew("residents", "resident_age_18b", data, codes)}
           zKey="group"
           maskRange={computeAgeMaskRange(selected)}
         />
@@ -491,7 +475,8 @@
           {:else}
             <svelte:component
               this={chart_type}
-              data={data.selected && makeDataNew("residents", table.code)}
+              data={data.selected &&
+                makeDataNew("residents", table.code, data, codes)}
             />
           {/if}
           <span class="num-desc">% of {populationBases[table.code]}</span>

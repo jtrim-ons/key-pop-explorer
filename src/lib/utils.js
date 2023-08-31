@@ -96,3 +96,21 @@ export function computeAgeMaskRange(selected) {
 
   return null;
 }
+
+export function makeDataNew(group, dataset, data, codes) {
+  let valsAll = data.all[group][dataset].values;
+  let valsSelected = data.selected[group][dataset].values;
+
+  let arr = [];
+
+  codes[dataset].forEach((cd, i) => {
+    let label = cd.label;
+    let valAll = valsAll.percent[i];
+    let valSelected = valsSelected.percent[i];
+    if (data.selected.total_pop != data.all.total_pop)
+      arr.push({ group: "This group", category: label, value: valSelected });
+    arr.push({ group: "Whole population", category: label, value: valAll });
+  });
+
+  return arr;
+}
