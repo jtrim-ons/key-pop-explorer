@@ -51,7 +51,6 @@
     themes,
     vars,
     varsNested,
-    codes,
     mapStyle,
     texts,
     arrow,
@@ -445,8 +444,7 @@
           {:else}
             <svelte:component
               this={chart_type}
-              data={data.selected &&
-                makeDataNew("residents", table.code, data, codes)}
+              data={data.selected && makeDataNew("residents", table.code, data)}
             />
           {/if}
           <span class="num-desc">% of {populationBases[table.code]}</span>

@@ -1,6 +1,6 @@
 import { feature } from 'topojson-client';
 
-import { maskRanges } from "$lib/config";
+import { maskRanges, codes } from "$lib/config";
 
 const endpoint = "https://raw.githubusercontent.com/jtrim-ons/key-pop-api-downloader/main/generated/";
 
@@ -97,7 +97,7 @@ export function computeAgeMaskRange(selected) {
   return null;
 }
 
-export function makeDataNew(group, dataset, data, codes) {
+export function makeDataNew(group, dataset, data) {
   let valsAll = data.all[group][dataset].values;
   let valsSelected = data.selected[group][dataset].values;
 

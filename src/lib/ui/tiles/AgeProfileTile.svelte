@@ -2,7 +2,7 @@
   import Tile from "$lib/layout/partial/Tile.svelte";
   import ProfileChart from "$lib/chart/ProfileChart.svelte";
 
-  import { texts, codes } from "$lib/config";
+  import { texts } from "$lib/config";
   import { makeDataNew, computeAgeMaskRange } from "$lib/utils";
 
   export let data;
@@ -16,8 +16,7 @@
     <span class="num-desc">{texts.nodata}</span>
   {:else}
     <ProfileChart
-      data={data.selected &&
-        makeDataNew("residents", "resident_age_18b", data, codes)}
+      data={data.selected && makeDataNew("residents", "resident_age_18b", data)}
       zKey="group"
       maskRange={computeAgeMaskRange(selected)}
     />
