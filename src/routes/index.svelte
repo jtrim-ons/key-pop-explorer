@@ -33,7 +33,7 @@
 </script>
 
 <script>
-  import MapTiles from "./MapTiles.svelte";
+  import MapTiles from "../lib/ui/tiles/MapTiles.svelte";
 
   import BarChartTile from "../lib/ui/tiles/BarChartTile.svelte";
 
