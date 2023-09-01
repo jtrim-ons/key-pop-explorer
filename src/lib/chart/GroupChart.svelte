@@ -71,7 +71,6 @@
         style:left="calc({xScale(d[xKey])}% + 2px)"
         style:top={i == 0 ? "0" : "50%"}
         style:height="50%"
-        bind:clientWidth={d.width}
       >
         {formatTick(d[xKey])}{suffix}
       </div>
