@@ -42,47 +42,34 @@
   if (maxbounds) options.maxBounds = maxbounds;
 
   onMount(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://unpkg.com/mapbox-gl@1.13.0/dist/mapbox-gl.css";
+    map = new mapbox.Map({
+      container,
+      style: style,
+      minZoom: minzoom,
+      maxZoom: maxzoom,
+      interactive: interactive,
+      ...options,
+    });
 
-    link.onload = () => {
-      map = new mapbox.Map({
-        container,
-        style: style,
-        minZoom: minzoom,
-        maxZoom: maxzoom,
-        interactive: interactive,
-        ...options,
-      });
+    if (zoomcontrol) {
+      map.addControl(new mapbox.NavigationControl({ showCompass: false }));
+    }
+    if (!scrollzoom) {
+      map.scrollZoom.disable();
+    }
+    if (geolocate) {
+      map.addControl(new mapbox.GeolocateControl());
+    }
 
-      if (zoomcontrol) {
-        map.addControl(new mapbox.NavigationControl({ showCompass: false }));
-      }
-      if (!scrollzoom) {
-        map.scrollZoom.disable();
-      }
-      if (geolocate) {
-        map.addControl(new mapbox.GeolocateControl());
-      }
+    // Get initial zoom level
+    map.on("load", () => {
+      zoom = map.getZoom();
+    });
 
-      // Get initial zoom level
-      map.on("load", () => {
-        zoom = map.getZoom();
-      });
-
-      // Update zoom level when the view zooms
-      map.on("zoom", () => {
-        zoom = map.getZoom();
-      });
-    };
-
-    document.head.appendChild(link);
-
-    return () => {
-      map.remove();
-      link.parentNode.removeChild(link);
-    };
+    // Update zoom level when the view zooms
+    map.on("zoom", () => {
+      zoom = map.getZoom();
+    });
   });
 </script>
 
