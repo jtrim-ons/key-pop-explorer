@@ -4,6 +4,7 @@ import outputClassifications from './output-classifications-with-details';
 import outputClassificationsCategorised from './output-classifications-categorised';
 import populationBases_ from "$lib/population-bases.json";
 import unblockedCombinationCounts_ from "$lib/unblocked-combination-counts";
+import mapStyle_ from "$lib/map-style.json";
 
 export const unblockedCombinationCounts = unblockedCombinationCounts_;
 export const populationBases = populationBases_;
@@ -122,7 +123,7 @@ function nestVars(vars) {
 export let varsNested = nestVars(vars);
 console.log(varsNested)
 
-export const mapStyle = 'https://bothness.github.io/ons-basemaps/data/style-omt.json';
+export const mapStyle = mapStyle_;
 export const ladBounds = {
 	url: "/data/lad-cty-rgn-ctry-ew.json",
 	layer: "lad",
