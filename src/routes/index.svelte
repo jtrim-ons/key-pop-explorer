@@ -252,7 +252,7 @@
     {#if selected[0]}
       <br />
       {#each selected as item, i}
-        {#if status == "loading" && i == selected.length - 1}
+        {#if status == "loading"}
           <div class="chip chip-pending">
             <span>{capitalise(item.topic)}: {capitalise(item.label)}</span>
             <div class="chip-loader" />
