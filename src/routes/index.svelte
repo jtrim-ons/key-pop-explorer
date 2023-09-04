@@ -279,12 +279,14 @@
       </div>
     {/if}
 
-    <OptionPicker
-      options={varsNested}
-      clickCallback={doSelect}
-      removeCatCallback={doDeselect}
-      globalSelectedCategories={selected}
-    />
+    {#if selected.length < 3}
+      <OptionPicker
+        options={varsNested}
+        clickCallback={doSelect}
+        removeCatCallback={doDeselect}
+        globalSelectedCategories={selected}
+      />
+    {/if}
   </div>
 </Titleblock>
 
