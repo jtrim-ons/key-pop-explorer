@@ -9,17 +9,18 @@
 </script>
 
 <Tile title="Population">
-  {#if data.selected.total_pop == 0}
+  {#if data.selected.total_pop.count == null}
     <div class="num-desc">{texts.nodata}</div>
   {:else}
-    <div class="num-big">{data.selected.total_pop.toLocaleString()}</div>
+    <div class="num-big">
+      {data.selected.total_pop.count.toLocaleString()}
+    </div>
     <div class="num-suffix">
       people (TODO: calculate this percentage in Python)
     </div>
     <div class="num-desc">
       <Em color="lightgrey" />{calcPopPercentString(
-        data.selected.total_pop,
-        data.all.total_pop
+        data.selected.total_pop.percent
       )}% of the total population of England and Wales
     </div>
   {/if}

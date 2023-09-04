@@ -115,10 +115,9 @@ export function makeDataNew(group, dataset, data) {
   return arr;
 }
 
-export function calcPopPercentString(selectedPop, totalPop) {
-  if (selectedPop === totalPop) return "100";
-  // FIXME: don't do this with floating point arithmetic
-  const pctString = ((selectedPop / totalPop) * 100).toFixed(1);
+export function calcPopPercentString(percentage) {
+  if (percentage === 100) return "100";
+  const pctString = percentage.toFixed(1);
   if (pctString !== "0.0") return pctString;
   return "Less than 0.05";
 }
