@@ -7,8 +7,7 @@
   export let labeller = (option) => option.label;
   export let selected = null;
   export let hasChildren = true;
-  $: console.log(options);
-  $: console.log(globalSelectedCategories);
+  export let disabled = false;
 
   function clicked(option) {
     console.log("clicked", option);
@@ -68,11 +67,14 @@
           id={"category-option-" + i}
           name="selected-category"
           checked={checkIfOptionSelected(option, globalSelectedCategories)}
+          {disabled}
           on:click={() => clickCallback(option)}
         /> <label for={"category-option-" + i}>{labeller(option)}</label>
         {#if checkIfOptionSelected(option, globalSelectedCategories)}
-          <button on:click={() => removeCatCallback(option)} style="float:right"
-            >Remove</button
+          <button
+            on:click={() => removeCatCallback(option)}
+            style="float:right"
+            {disabled}>Remove</button
           >
         {/if}
       </p>

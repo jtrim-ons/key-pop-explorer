@@ -5,6 +5,7 @@
   export let clickCallback = selectCat;
   export let removeCatCallback = removeCat;
   export let globalSelectedCategories = [];
+  export let disabled = false;
 
   function selectCat(variable, cat) {
     console.log(variable, cat);
@@ -47,6 +48,7 @@
           removeCatCallback(selectedClassification, category)}
         hasChildren={false}
         {globalSelectedCategories}
+        {disabled}
       />
     {/if}
   {/if}

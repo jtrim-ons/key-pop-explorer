@@ -285,6 +285,7 @@
         clickCallback={doSelect}
         removeCatCallback={doDeselect}
         globalSelectedCategories={selected}
+        disabled={status === "loading"}
       />
     {/if}
   </div>
