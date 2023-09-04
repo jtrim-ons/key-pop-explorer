@@ -100,28 +100,30 @@
     geoBreaks: [0, 100],
   };
 
+  function updateUrl() {
+    // TODO: check what `goto` does
+    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
+      noscroll: true,
+    });
+  }
+
   function doSelect(variable, cat) {
     selected = [
       ...selected.filter((d) => d.topic !== variable.shortLabel),
       { topic: variable.shortLabel, key: variable.key, ...cat },
     ];
-    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
-      noscroll: true,
-    });
+    updateUrl();
   }
 
   function doDeselect(variable, cat) {
+    // FIXME: This might break if cats for different vars have the same label.
     selected = selected.filter((d) => d.label !== cat.label);
-    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
-      noscroll: true,
-    });
+    updateUrl();
   }
 
   function unSelect(topic) {
     selected = selected.filter((d) => d.topic != topic);
-    goto(`${base}?${selected.map((d) => `${d.key}=${d.code}`).join("&")}`, {
-      noscroll: true,
-    });
+    updateUrl();
   }
 
   function groupsToBreaks(groups) {
