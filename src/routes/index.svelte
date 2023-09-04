@@ -8,26 +8,23 @@
   export async function load({ fetch }) {
     let geojson = await getTopo(assets + ladBounds.url, ladBounds.layer, fetch);
 
-    let geoLookup = {};
-    geojson.features.forEach(
-      (d) =>
-        (geoLookup[d.properties[ladBounds.code]] = d.properties[ladBounds.name])
-    );
-
     let dataAll = (await getData(datasets, [], fetch)).data;
     dataAll.total_pop = makeSum(dataAll.residents.sex.values.count);
 
-    let geoPerc = [];
+    let geoCodesAndNames = geojson.features.map((d) => ({
+      code: d.properties[ladBounds.code],
+      name: d.properties[ladBounds.name],
+    }));
 
-    let geoCodes = geojson.features.map((d) => d.properties[ladBounds.code]);
-
-    geoCodes.forEach((code) => {
-      geoPerc.push({ code: code, name: geoLookup[code], value: 100 });
-    });
-    geoPerc.forEach((d) => (d.color = colors.seq[4]));
+    let geoPerc = geoCodesAndNames.map(({ code, name }) => ({
+      code,
+      name,
+      value: 100,
+      color: colors.seq[4],
+    }));
 
     return {
-      props: { geojson, geoLookup, dataAll, geoCodes, geoPerc },
+      props: { geojson, geoCodesAndNames, geoPerc, dataAll },
     };
   }
 </script>
@@ -62,7 +59,7 @@
   import Tiles from "$lib/layout/Tiles.svelte";
   import OptionPicker from "$lib/ui/OptionPicker.svelte";
 
-  export let geojson, geoLookup, dataAll, geoCodes, geoPerc;
+  export let geojson, geoCodesAndNames, geoPerc, dataAll;
 
   // STYLE CONFIG
   // Set theme globally (options are 'light' or 'dark')
@@ -94,8 +91,7 @@
     all: dataAll,
     selected: dataAll,
     geojson,
-    geoLookup,
-    geoCodes,
+    geoCodesAndNames,
     geoPerc,
     geoBreaks: [0, 100],
   };
@@ -148,26 +144,22 @@
     if (true) {
       // FIXME: check this against Ahmad's previous version,
       //     and probably create 100% data in Python for no selections.
-      data.geoCodes.forEach((code) => {
+      data.geoCodesAndNames.forEach(({ code, name }) => {
         let value =
           selected.length === 0
             ? 100
             : d.mapData[code] != null
             ? d.mapData[code][1]
             : null;
-        data.geoPerc.push({ code: code, name: data.geoLookup[code], value });
+        data.geoPerc.push({ code: code, name, value });
       });
 
       let vals = data.geoPerc.map((d) => d.value).filter((d) => d != null);
       groups =
         vals.length === 0 ? null : ckmeans(vals, Math.min(5, vals.length));
     } else {
-      data.geoCodes.forEach((code) => {
-        data.geoPerc.push({
-          code: code,
-          name: data.geoLookup[code],
-          value: null,
-        });
+      data.geoCodesAndNames.forEach(({ code, name }) => {
+        data.geoPerc.push({ code, name, value: null });
       });
     }
 
