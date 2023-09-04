@@ -15,9 +15,7 @@
     <div class="num-big">
       {data.selected.total_pop.count.toLocaleString()}
     </div>
-    <div class="num-suffix">
-      people (TODO: calculate this percentage in Python)
-    </div>
+    <div class="num-suffix">people</div>
     <div class="num-desc">
       <Em color="lightgrey" />{calcPopPercentString(
         data.selected.total_pop.percent
