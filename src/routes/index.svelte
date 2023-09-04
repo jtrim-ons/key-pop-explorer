@@ -359,24 +359,6 @@
     color: #206095;
     background-color: lightgrey;
   }
-  select {
-    appearance: none;
-    background: white
-      url("https://ons-design-system.netlify.app/img/icons--chevron-down.svg")
-      padding-box no-repeat;
-    background-position: calc(100% - 10px) 50%;
-    background-size: 18px;
-    border: 1.5px solid rgb(34, 34, 34);
-    outline: 1.5px solid white;
-    border-radius: 3px;
-    padding: 7px 36px 7px 9px;
-    margin: 8px 0;
-    font-size: 1rem;
-  }
-  select:focus {
-    outline-color: rgb(34, 34, 34);
-    box-shadow: 0 0 0 4px orange;
-  }
   button {
     cursor: pointer;
   }
@@ -412,7 +394,6 @@
     font-size: 14px;
     line-height: 1.3;
   }
-
   .chip {
     display: inline-flex;
     vertical-align: middle;
