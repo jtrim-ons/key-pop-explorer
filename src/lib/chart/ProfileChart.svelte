@@ -171,8 +171,8 @@
     background-color: #27a0cc;
   }
   .mask {
-    background-color: yellow;
-    opacity: 0.3;
+    background-color: rgb(245, 245, 246);
+    opacity: 0.8;
     pointer-events: none;
   }
   .marker {
