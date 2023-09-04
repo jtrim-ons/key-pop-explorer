@@ -84,8 +84,13 @@
 
 <style>
   .column {
-    width: 33.33%;
-    padding-right: 9px;
+    width: 100%;
+  }
+  @media (min-width: 800px) {
+    .column {
+      width: 33.33%;
+      padding-right: 9px;
+    }
   }
   button.plain-button {
     display: block;

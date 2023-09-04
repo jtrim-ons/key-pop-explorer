@@ -92,6 +92,12 @@
 
   .container {
     display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 800px) {
+    .container {
+      flex-direction: row;
+    }
   }
 
   .chevron-right {
