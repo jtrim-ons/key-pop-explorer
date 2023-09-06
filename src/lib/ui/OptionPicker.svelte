@@ -16,8 +16,21 @@
   }
 
   let selectedColumn = null;
-  let selectedClassification = null;
+  //let selectedClassification = null;
   let selectedCategory = null;
+
+  $: varToSelectedClassification = (function () {
+    let result = {};
+    options.forEach((opt) => (result[opt.label] = 0));
+    return result;
+  })();
+
+  function moreCategories() {
+    ++varToSelectedClassification[selectedColumn.label];
+  }
+  function fewerCategories() {
+    --varToSelectedClassification[selectedColumn.label];
+  }
 </script>
 
 <div class="container">
@@ -25,32 +38,41 @@
     columnTitle="Select a variable"
     bind:selected={selectedColumn}
     clickCallback={() => {
-      selectedClassification = null;
+      //selectedClassification = null;
     }}
     {options}
     {globalSelectedCategories}
+    hiddenOnMobile={selectedColumn != null}
   />
   {#if selectedColumn != null}
-    <OptionPickerColumn
-      columnTitle="Select a classification"
-      labeller={(option) => `${option.cats.length + " categories"}`}
-      bind:selected={selectedClassification}
-      options={selectedColumn.vars}
-    />
-    {#if selectedClassification != null}
+    {#each [selectedColumn.vars[varToSelectedClassification[selectedColumn.label]]] as selectedClassification}
       <OptionPickerColumn
-        columnTitle="Select a category"
+        columnTitle={selectedColumn.label}
         bind:selected={selectedCategory}
         options={selectedClassification.cats}
         clickCallback={(category) =>
           clickCallback(selectedClassification, category)}
         removeCatCallback={(category) =>
           removeCatCallback(selectedClassification, category)}
+        backButtonCallback={() => (selectedColumn = null)}
         hasChildren={false}
         {globalSelectedCategories}
         {disabled}
-      />
-    {/if}
+      >
+        {#if varToSelectedClassification[selectedColumn.label] > 0}
+          <button on:click={fewerCategories}>Fewer categories</button>
+        {/if}
+        {#if varToSelectedClassification[selectedColumn.label] < selectedColumn.vars.length - 1}
+          <button on:click={moreCategories}>More categories</button>
+        {/if}
+      </OptionPickerColumn>
+    {/each}
+    <!-- <OptionPickerColumn
+      columnTitle="Select a classification"
+      labeller={(option) => `${option.cats.length + " categories"}`}
+      bind:selected={selectedClassification}
+      options={selectedColumn.vars}
+    /> -->
   {/if}
 </div>
 

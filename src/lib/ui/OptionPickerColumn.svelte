@@ -2,12 +2,14 @@
   export let options = [];
   export let clickCallback = clicked;
   export let removeCatCallback = clicked;
+  export let backButtonCallback = null;
   export let globalSelectedCategories = [];
   export let columnTitle = "column title";
   export let labeller = (option) => option.label;
   export let selected = null;
   export let hasChildren = true;
   export let disabled = false;
+  export let hiddenOnMobile = false;
 
   function clicked(option) {
     console.log("clicked", option);
@@ -25,16 +27,18 @@
   function checkIfOptionSelected(cat, globalSelectedCategories) {
     for (const s of globalSelectedCategories) {
       if (s.var === cat.var && s.code === cat.code) {
-        console.log(s, cat);
         return true;
       }
     }
-    console.log("f");
     return false;
   }
 </script>
 
-<div class="column">
+<div class="column" class:hidden-first-column={hiddenOnMobile}>
+  {#if backButtonCallback != null}
+    <button class="hidden-on-desktop" on:click={backButtonCallback}>Back</button
+    >
+  {/if}
   <h5 class="column-title">{columnTitle}</h5>
   {#if hasChildren}
     {#each options as option}
@@ -80,16 +84,28 @@
       </p>
     {/each}
   {/if}
+
+  <slot />
 </div>
 
 <style>
+  .hidden-first-column {
+    display: none;
+  }
+
   .column {
     width: 100%;
   }
   @media (min-width: 800px) {
     .column {
-      width: 33.33%;
+      width: 50%;
       padding-right: 9px;
+    }
+    .hidden-first-column {
+      display: initial;
+    }
+    .hidden-on-desktop {
+      display: none;
     }
   }
   button.plain-button {
