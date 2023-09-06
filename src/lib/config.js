@@ -125,8 +125,8 @@ console.log(varsNested)
 
 export const mapStyle = mapStyle_;
 export const ladBounds = {
-	url: "/data/lad-cty-rgn-ctry-ew.json",
-	layer: "lad",
+	url: "/data/ltla2021.json",
+	layer: "ltla",
 	code: "areacd",
 	name: "areanm"
 }
