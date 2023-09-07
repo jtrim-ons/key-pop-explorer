@@ -77,7 +77,7 @@
   let status = "success"; // Options: success, fail, loading
   let u16 = false; // If age selection is 0-15 some tables won't show data
   let varcount = 0; // Number of variables successfully loaded
-  let chart_type = BarChart;
+  let chart_type = GroupChart;
 
   const getUnblockedCount = (op) =>
     unblockedCombinationCounts[
@@ -298,7 +298,7 @@
 
   <MapTiles {data} {mapStyle} {ladBounds} {selected} {colors} />
   <!-- <span slot="meta" style:margin-left="10px"> -->
-  <span>
+  <!-- <span>
     <strong>Chart type:</strong>
     {#each chartTypeOptions as chartTypeOption}
       <label
@@ -310,7 +310,7 @@
         />{chartTypeOption.name}</label
       >
     {/each}
-  </span>
+  </span> -->
 
   {#each datasets[0].tablesCategorised as category}
     <Tiles title={category.categoryName}>
