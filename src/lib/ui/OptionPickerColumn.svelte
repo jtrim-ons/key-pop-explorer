@@ -10,6 +10,7 @@
   export let hasChildren = true;
   export let disabled = false;
   export let hiddenOnMobile = false;
+  export let currentVar = null;
 
   function clicked(option) {
     console.log("clicked", option);
@@ -39,8 +40,9 @@
     <button class="hidden-on-desktop" on:click={backButtonCallback}>Back</button
     >
   {/if}
-  <h5 class="column-title">{columnTitle}</h5>
   {#if hasChildren}
+    <h5 class="column-title">{columnTitle}</h5>
+
     {#each options as option}
       <button
         class:plain-button={true}
@@ -64,6 +66,17 @@
       </button>
     {/each}
   {:else}
+    <div class="title-container">
+      <h5 class="column-title">{columnTitle}</h5>
+      {#if checkIfAnySelected(currentVar, globalSelectedCategories)}
+        <button
+          on:click={() => removeCatCallback(currentVar)}
+          style="float:right"
+          {disabled}>Clear selection</button
+        >
+      {/if}
+    </div>
+
     {#each options as option, i}
       <p>
         <input
@@ -74,13 +87,6 @@
           {disabled}
           on:click={() => clickCallback(option)}
         /> <label for={"category-option-" + i}>{labeller(option)}</label>
-        {#if checkIfOptionSelected(option, globalSelectedCategories)}
-          <button
-            on:click={() => removeCatCallback(option)}
-            style="float:right"
-            {disabled}>Remove</button
-          >
-        {/if}
       </p>
     {/each}
   {/if}
@@ -91,6 +97,10 @@
 <style>
   .hidden-first-column {
     display: none;
+  }
+
+  .title-container {
+    display: flex;
   }
 
   .column {

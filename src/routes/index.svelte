@@ -111,9 +111,8 @@
     updateUrl();
   }
 
-  function doDeselect(variable, cat) {
-    // FIXME: This might break if cats for different vars have the same label.
-    selected = selected.filter((d) => d.label !== cat.label);
+  function doDeselect(variable) {
+    selected = selected.filter((d) => d.topic !== variable.shortLabel);
     updateUrl();
   }
 

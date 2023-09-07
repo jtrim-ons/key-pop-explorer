@@ -57,6 +57,7 @@
         backButtonCallback={() => (selectedColumn = null)}
         hasChildren={false}
         {globalSelectedCategories}
+        currentVar={selectedColumn}
         {disabled}
       >
         {#if varToSelectedClassification[selectedColumn.label] > 0}
